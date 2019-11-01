@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import routes from './routers'
 import store from '@/store'
 import iView from 'iview'
 import Util from '../libs/utils';
@@ -25,7 +24,7 @@ const turnTo = (to, access, next) => {
 router.beforeEach((to, from, next) => {
   iView.LoadingBar.start()
   const token = getToken()
-  var name = to.name;
+  var name = to.name
   if (!token && to.name !== LOGIN_PAGE_NAME) {
     // 未登录且要跳转的页面不是登录页
     next({
@@ -53,12 +52,12 @@ router.beforeEach((to, from, next) => {
     //     })
     //   })
     // }
-    Util.toDefaultPage([...routers], name, router, next);
+    Util.toDefaultPage([...routers], name, router, next)
   }
 })
 
 router.afterEach(to => {
-  Util.openNewPage(router.app, to.name, to.params, to.query);
+  Util.openNewPage(router.app, to.name, to.params, to.query)
   // setTitle(to, router.app)
   iView.LoadingBar.finish()
   window.scrollTo(0, 0)

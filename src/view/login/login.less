@@ -1,29 +1,59 @@
 .login{
     width: 100%;
     height: 100%;
-    background-image: url('../../assets/images/login-bg.jpg');
-    background-size: cover;
-    background-position: center;
+    // background-image: url('../../assets/images/login-bg.jpg');
+    // background-size: cover;
+    // background-position: center;
     position: relative;
-    &-con{
+
+    .login-bg {
+      position: absolute;
+      z-index: -1;
+      top: 0px;
+      left: 0px;
+      bottom: 0px;
+      right: 0px;
+      overflow: hidden;
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: 50% 50%;
+      background-image: none;
+      .login-bg-video {
+        margin: auto;
         position: absolute;
-        right: 160px;
+        z-index: -1;
         top: 50%;
-        transform: translateY(-60%);
-        width: 300px;
-        &-header{
-            font-size: 16px;
-            font-weight: 300;
-            text-align: center;
-            padding: 30px 0;
-        }
-        .form-con{
-            padding: 10px 0 0;
-        }
-        .login-tip{
-            font-size: 10px;
-            text-align: center;
-            color: #c3c3c3;
-        }
+        left: 50%;
+        transform: translate(-50%, -50%);
+        visibility: visible;
+        width: 100%;
+        height: auto;
+      }
+    }
+    .login-container {
+      position: relative;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.42);
+      &-con{
+          position: absolute;
+          right: 160px;
+          top: 50%;
+          transform: translateY(-60%);
+          width: 300px;
+          &-header{
+              font-size: 16px;
+              font-weight: 300;
+              text-align: center;
+              padding: 30px 0;
+          }
+          .form-con{
+              padding: 10px 0 0;
+          }
+          .login-tip{
+              font-size: 10px;
+              text-align: center;
+              color: #c3c3c3;
+          }
+      }
     }
 }
