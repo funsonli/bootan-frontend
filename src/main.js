@@ -63,5 +63,9 @@ new Vue({
   mounted() {
       // 初始化菜单
       util.initRouter(this);
+      this.currentPageName = this.$route.name;
+      // 显示打开的页面的列表
+      this.$store.commit('setOpenedList');
+      this.$store.commit('initCachepage');
   }
 })

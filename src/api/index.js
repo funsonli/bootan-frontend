@@ -31,6 +31,10 @@ export const apiUserIndex = (params) => {
   return axios.getRequest('/user/index', params)
 }
 
+export const apiUserView = (id, params) => {
+  return axios.getRequest('/user/view/' + id, params)
+}
+
 export const apiUserSave = (params) => {
   return axios.postRequest('/user/save', params)
 }
@@ -209,6 +213,10 @@ export const apiDictDataDisable = (id, params) => {
 
 export const apiDictDataEnable = (id, params) => {
   return axios.postRequest('/dict-data/enable/' + id, params)
+}
+
+export const apiDictDataImportData = (params) => {
+  return axios.importRequest('/dict-data/import-data', params)
 }
 
 export const apiLogIndex = (params) => {

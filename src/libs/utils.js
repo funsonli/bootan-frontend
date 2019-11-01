@@ -452,7 +452,7 @@ util.initRouterNode = function (routers, data) {
     // 给页面添加权限、标题、第三方网页链接
     meta.permTypes = menu.permTypes ? menu.permTypes : null
     meta.title = menu.title ? menu.title + ' - Bootan开发平台' : null
-    meta.url = menu.url ? menu.url : null
+    meta.url = menu.redirectUrl ? menu.redirectUrl : null
     menu.meta = meta
 
     routers.push(menu)

@@ -212,7 +212,6 @@ export default {
     //   this.$refs.sideMenu.updateOpenName(newRoute.name)
     // }
     $route (to) {
-      console.log('111')
       this.$store.commit('setCurrentPageName', to.name)
       let pathArr = util.setCurrentPath(this, to.name)
       if (pathArr.length > 2) {

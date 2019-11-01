@@ -113,6 +113,7 @@ export default {
       setTagNavListInLocalstorage([...tagList])
     },
     setTagsList (state, list) {
+        state.tagsList.push(...otherRouter.children)
       state.tagsList.push(...list)
     },
     closeTag (state, route) {
@@ -185,11 +186,23 @@ export default {
       state.cachePage = newCachepage
         localStorage.pageOpenedList = JSON.stringify(state.pageOpenedList)
     },
+    closePage(state, name) {
+        state.cachePage.forEach((item, index) => {
+            if (item == name) {
+                state.cachePage.splice(index, 1)
+            }
+        })
+    },
     setCurrentPageName (state, name) {
       state.currentPageName = name
     },
     setOpenedList (state) {
       state.pageOpenedList = localStorage.pageOpenedList ? JSON.parse(localStorage.pageOpenedList) : [otherRouter.children[0]]
+    },
+    initCachepage(state) {
+        if (localStorage.cachePage) {
+            state.cachePage = JSON.parse(localStorage.cachePage)
+        }
     },
     addOpenSubmenu (state, name) {
       let hasThisName = false

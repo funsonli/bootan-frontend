@@ -18,39 +18,39 @@ import parentView from '@/components/parent-view'
  */
 
 export const loginRouter = {
-    path: '/login',
-    name: 'login',
-    meta: {
-        title: 'Login - 登录 ',
-        hideInMenu: true
-    },
-    component: () => import('@/view/login/login.vue')
+  path: '/login',
+  name: 'login',
+  meta: {
+    title: 'Login - 登录 ',
+    hideInMenu: true
+  },
+  component: () => import('@/view/login/login.vue')
 }
 
 // 作为Main组件的子页面展示但是不在左侧菜单显示的路由写在otherRouter里
 export const otherRouter = {
-    path: '/',
-    name: 'otherRouter',
-    redirect: '/home',
-    component: Main,
-    children: [
-        { path: 'home', title: { i18n: 'home' }, name: 'home_index', component: () => import('@/view/single-page/home/home.vue') },
-        { path: 'message', title: '消息中心', name: 'message_page', component: () => import('@/view/single-page/message/index.vue') },
-    ]
+  path: '/',
+  name: 'otherRouter',
+  redirect: '/home',
+  component: Main,
+  children: [
+    { path: 'home', title: { i18n: 'home' }, name: 'home_index', component: () => import('@/view/single-page/home/home.vue') },
+    { path: 'message', title: '消息中心', name: 'message_page', component: () => import('@/view/single-page/message/index.vue') }
+  ]
 }
 
 export const appRouter = []
 
 // 所有上面定义的路由都要写在下面的routers里
 export const routers = [
-    loginRouter,
-    // registRouter,
-    // registResult,
-    // reset,
-    // relateRouter,
-    otherRouter,
-    // locking,
-    ...appRouter
-    // page500,
-    // page403
+  loginRouter,
+  // registRouter,
+  // registResult,
+  // reset,
+  // relateRouter,
+  otherRouter,
+  // locking,
+  ...appRouter
+  // page500,
+  // page403
 ]

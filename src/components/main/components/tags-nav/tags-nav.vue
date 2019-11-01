@@ -48,7 +48,7 @@
 
 <script>
 import { showTitle, routeEqual } from '@/libs/util'
-import beforeClose from '@/router/before-close'
+// import beforeClose from '@/router/before-close'
 export default {
   name: 'TagsNav',
   props: {
@@ -58,6 +58,12 @@ export default {
       type: Array,
       default () {
         return []
+      }
+    },
+    beforePush: {
+      type: Function,
+      default: item => {
+        return true
       }
     }
   },
@@ -73,7 +79,8 @@ export default {
         others: '关闭其他',
         all: '关闭所有'
       },
-      refsTag: []
+      refsTag: [],
+      currentPageName: this.$route.name
     }
   },
   computed: {
@@ -109,33 +116,59 @@ export default {
       }
     },
     handleTagsOption (type) {
-      if (type.includes('all')) {
-        // 关闭所有，除了home
-        let res = this.list.filter(item => item.name === this.$config.homeName)
-        this.$emit('on-close', res, 'all')
-      } else if (type.includes('others')) {
-        // 关闭除当前页和home页的其他页
-        let res = this.list.filter(item => routeEqual(this.currentRouteObj, item) || item.name === this.$config.homeName)
-        this.$emit('on-close', res, 'others', this.currentRouteObj)
-        setTimeout(() => {
-          this.getTagElementByRoute(this.currentRouteObj)
-        }, 100)
-      }
-    },
-    handleClose (current) {
-      if (current.meta && current.meta.beforeCloseName && current.meta.beforeCloseName in beforeClose) {
-        new Promise(beforeClose[current.meta.beforeCloseName]).then(close => {
-          if (close) {
-            this.close(current)
-          }
+      if (type === 'close-all') {
+        this.$store.commit('clearAllTags')
+        this.$router.push({
+          name: 'home_index'
         })
       } else {
-        this.close(current)
+        this.$store.commit('clearOtherTags', this)
+      }
+      this.tagBodyLeft = 0
+    },
+    handleClose (current) {
+      let pageOpenedList = this.$store.state.app.pageOpenedList
+      let lastPageObj = pageOpenedList[0]
+      if (this.currentPageName === current.name) {
+        let len = pageOpenedList.length
+        for (let i = 1; i < len; i++) {
+          if (pageOpenedList[i].name === current.name) {
+            if (i < len - 1) {
+              lastPageObj = pageOpenedList[i + 1]
+            } else {
+              lastPageObj = pageOpenedList[i - 1]
+            }
+            break
+          }
+        }
+      } else {
+        let tagWidth = event.target.parentNode.offsetWidth
+        this.tagBodyLeft = Math.min(this.tagBodyLeft + tagWidth, 0)
+      }
+      this.$store.commit('removeTag', current.name)
+      this.$store.commit('closePage', current.name)
+      pageOpenedList = this.$store.state.app.pageOpenedList
+      localStorage.pageOpenedList = JSON.stringify(pageOpenedList)
+      if (this.currentPageName === current.name) {
+        this.linkTo(lastPageObj)
       }
     },
     close (route) {
       let res = this.list.filter(item => !routeEqual(route, item))
       this.$emit('on-close', res, undefined, route)
+    },
+    linkTo (item) {
+      let routerObj = {}
+      routerObj.name = item.name
+      if (item.argu) {
+        routerObj.params = item.argu
+      }
+      if (item.query) {
+        routerObj.query = item.query
+      }
+      if (this.beforePush(item)) {
+        this.$router.push(routerObj)
+      }
     },
     handleClick (item) {
       this.$emit('input', item)
@@ -188,6 +221,7 @@ export default {
   },
   watch: {
     '$route' (to) {
+      this.currentPageName = to.name
       this.getTagElementByRoute(to)
     },
     visible (value) {

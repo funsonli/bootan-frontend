@@ -63,7 +63,6 @@
             <DropdownMenu slot="list">
               <DropdownItem name="exportData">导出所选数据</DropdownItem>
               <DropdownItem name="exportAll">导出全部数据</DropdownItem>
-              <DropdownItem name="importData">导入数据[付费]</DropdownItem>
             </DropdownMenu>
           </Dropdown>
           <Button @click="initDictData" icon="md-refresh">刷新</Button>
@@ -225,7 +224,6 @@ import { importDataColumns, importData } from './import-excel.js'
 export default {
   name: 'model-manage',
   data () {
-    let that = this
     return {
       selectNode: {},
       selectCount: 0,
@@ -261,7 +259,7 @@ export default {
         { title: '名称', key: 'name', sortable: true, fixed: 'left' },
         { title: '数据值', key: 'value', sortable: true },
 
-        { title: '排序', width: 110, key: 'sortOrder', sortable: true },
+        { title: '排序', key: 'sortOrder', sortable: true },
 
         {
           title: '状态',
@@ -290,10 +288,14 @@ export default {
           },
           filters: [],
           filterMultiple: false,
-          filterRemote (value, row) {
-            that.searchForm.status = value[0]
-            that.searchForm.status = that.searchForm.status + ''
-            that.getModels()
+          filterMethod (value, row) {
+            if (value === 1) {
+              row.status = 1
+              return row.status
+            } else if (value !== 1) {
+              row.status = 0
+              return row.status
+            }
           }
         },
         { title: '创建时间', key: 'createdAt', sortable: true, sortType: 'desc' },
@@ -304,28 +306,9 @@ export default {
           key: 'action',
           align: 'center',
           fixed: 'right',
-          width: 226,
+          width: 256,
           render: (h, params) => {
             return h('div', [
-              h(
-                'Button',
-                {
-                  props: {
-                    type: 'default',
-                    size: 'small',
-                    icon: 'ios-eye'
-                  },
-                  style: {
-                    marginRight: '5px'
-                  },
-                  on: {
-                    click: () => {
-                      this.viewModal(params.row)
-                    }
-                  }
-                },
-                '查看'
-              ),
               h(
                 'Button',
                 {
@@ -455,7 +438,7 @@ export default {
     initDict () {
       this.getModelsDict()
       this.selectNode = {}
-      this.selectTitle = ''
+      this.editTitle = ''
       this.getModels()
     },
     initDictData () {
@@ -472,7 +455,7 @@ export default {
         delete this.searchForm.dictId
       }
       // 避免后台默认值
-      if (typeof this.searchForm.status === 'undefined' || this.searchForm.status === 'undefined') {
+      if (typeof this.searchForm.status === 'undefined') {
         this.searchForm.status = ''
       }
       apiDictDataIndex(this.searchForm).then(res => {
@@ -518,9 +501,6 @@ export default {
       this.$refs.modelFormDict.validate(valid => {
         if (valid) {
           this.submitLoading = true
-          if (this.modalType === 0) {
-            delete this.modelFormDict.id
-          }
           apiDictSave(this.modelFormDict).then(res => {
             this.submitLoading = false
             if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
@@ -602,119 +582,9 @@ export default {
         }
       })
     },
-    handleSearchDict () {
-      if (this.searchKeyDict) {
-        this.loadingDict = true
-        let keyword = this.searchKeyDict
-        apiDictSearch(keyword).then(res => {
-          this.loadingDict = false
-          if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
-            this.dataDict = res.data.data.content
-          }
-        })
-      } else {
-        this.initDict()
-      }
-    },
-    changeStatus (row, v) {
-      if (row.status === 1) {
-        apiDictDataDisable(row.id).then(res => {
-          this.$Modal.remove()
-          if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
-            this.$Message.success(res.data.message)
-            this.getModels()
-          } else {
-            this.$Message.error(res.data.message)
-          }
-        })
-      } else {
-        apiDictDataEnable(row.id).then(res => {
-          this.$Modal.remove()
-          if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
-            this.$Message.success(res.data.message)
-            this.getModels()
-          } else {
-            this.$Message.error(res.data.message)
-          }
-        })
-      }
-    },
-    changeOperationDropDown (name) {
-      if (name === 'exportData') {
-        if (parseInt(this.selectCount) <= 0) {
-          this.$Message.warning('您还未选择要导出的数据')
-          return
-        }
-        this.exportType = 'part'
-        this.exportModalVisible = true
-        this.exportTitle = '确认导出 ' + this.selectCount + ' 条数据'
-      } else if (name === 'exportAll') {
-        this.exportType = 'all'
-        this.exportModalVisible = true
-        this.exportTitle = '确认导出全部 ' + this.total + ' 条数据'
-        apiDictDataIndex(this.searchForm).then(res => {
-          if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
-            this.exportDataList = res.data.data.content
-          }
-        })
-        for (var i = 0; i < Math.ceil(this.total / this.searchForm.pageSize) - 1; i++) {
-          setTimeout(() => {
-            apiDictDataIndex(this.searchForm).then(res => {
-              if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
-                this.exportDataList = this.exportDataList.concat(res.data.data.content)
-                this.searchForm.pageNumber = 1
-              }
-            })
-            this.searchForm.pageNumber = this.searchForm.pageNumber + 1
-          }, 500)
-        }
-      } else if (name === 'importData') {
-        this.importModalVisible = true
-      }
-    },
-    importData () {
-      this.loadingImport = true
-      apiDictDataImportData(this.importTableData).then(res => {
-        this.loadingImport = false
-        if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
-          this.importModalVisible = false
-          this.getModels()
-          this.$Modal.info({
-            title: '导入结果',
-            content: res.data.message
-          })
-        }
-      })
-    },
     /* **** 和后台交互代码区块 end **** */
 
     /* **** 页面内按钮交互代码 begin **** */
-    viewModal (v) {
-      let list = []
-      for (let attr in v) {
-        list[attr] = v[attr]
-        if (v[attr] == null) {
-          list[attr] = ''
-        } else {
-          if (attr === 'type') {
-            this.typeList.forEach((item) => {
-              if (item.value === v[attr]) {
-                list[attr] = item.label
-              }
-            })
-          } else if (attr === 'status') {
-            this.statusList.forEach((item) => {
-              if (item.value === v[attr]) {
-                list[attr] = item.label
-              }
-            })
-          }
-        }
-      }
-
-      this.viewForm = Object.assign({}, list)
-      this.viewModalVisible = true
-    },
     changeExpand () {
       this.expand = !this.expand
       if (this.expand) {
@@ -744,13 +614,37 @@ export default {
         this.searchForm.pageSize = 10
         this.getModels()
       } else {
-        this.handleSelectNoneDict()
+        this.cancelEdit()
       }
+    },
+    cancelEdit () {
+      let data = this.$refs.tree.getSelectedNodes()[0]
+      if (data) {
+        data.selected = false
+      }
+      // 取消选择后获取全部数据
+      this.selectNode = {}
+      this.editTitle = ''
+      this.getModels()
     },
     handleSearch () {
       this.searchForm.pageNumber = 1
       this.searchForm.pageSize = 10
       this.getModels()
+    },
+    handleSearchDict () {
+      if (this.searchKeyDict) {
+        this.loadingDict = true
+        let keyword = this.searchKeyDict
+        apiDictSearch(keyword).then(res => {
+          this.loadingDict = false
+          if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
+            this.dataDict = res.data.data.content
+          }
+        })
+      } else {
+        this.initDict()
+      }
     },
     handleClear (e) {
       if (e.target.value === '') {
@@ -764,11 +658,30 @@ export default {
       // 重新加载数据
       this.getModels()
     },
-    addModal () {
-      if (!this.selectNode.id) {
-        this.$Message.warning('请先选择一个字典类别')
-        return
+    changeStatus (row, v) {
+      if (row.status === 1) {
+        apiDictDataDisable(row.id).then(res => {
+          this.$Modal.remove()
+          if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
+            this.$Message.success(res.data.message)
+            this.getModels()
+          } else {
+            this.$Message.error(res.data.message)
+          }
+        })
+      } else {
+        apiDictDataEnable(row.id).then(res => {
+          this.$Modal.remove()
+          if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
+            this.$Message.success(res.data.message)
+            this.getModels()
+          } else {
+            this.$Message.error(res.data.message)
+          }
+        })
       }
+    },
+    addModal () {
       this.modalType = 0
       this.modalTitle = '添加'
       this.$refs.modelForm.resetFields()
@@ -783,6 +696,10 @@ export default {
     },
 
     editModal (v) {
+      if (!this.selectNode.id) {
+        this.$Message.warning('请先选择一个字典类别')
+        return
+      }
       this.modalType = 1
       this.modalTitle = '编辑'
       this.$refs.modelForm.resetFields()
@@ -799,12 +716,18 @@ export default {
     },
     editModalDict (v) {
       this.modalType = 1
-      this.modalTitleDict = '编辑字典'
+      this.modalTitle = '编辑'
       this.modelModalVisibleDict = true
     },
     /* **** 页面内按钮交互代码 end **** */
 
     /* **** 页面内控件标准代码（一般无须修改） begin **** */
+    changeSelectDateRange (v) {
+      if (v) {
+        this.searchForm.startDate = v[0]
+        this.searchForm.endDate = v[1]
+      }
+    },
     handleSelectNone () {
       this.$refs.table.selectAll(false)
     },
@@ -813,9 +736,9 @@ export default {
       if (data) {
         data.selected = false
       }
-      // 取消选择后获取全部数据
-      this.selectNode = {}
       this.selectTitle = ''
+      this.$refs.modelForm.resetFields()
+      delete this.modelForm.id
       this.getModels()
     },
     changeSort (e) {
@@ -854,6 +777,28 @@ export default {
         this.deleteOneDict()
       } else if (name === 'initDict') {
         this.initDict()
+      }
+    },
+    changeOperationDropDown (name) {
+      if (name === 'exportData') {
+        if (parseInt(this.selectCount) <= 0) {
+          this.$Message.warning('您还未选择要导出的数据')
+          return
+        }
+        this.exportType = 'part'
+        this.exportModalVisible = true
+        this.exportTitle = '确认导出 ' + this.selectCount + ' 条数据'
+      } else if (name === 'exportAll') {
+        this.exportType = 'all'
+        this.exportModalVisible = true
+        this.exportTitle = '确认导出全部 ' + this.total + ' 条数据'
+        apiDictDataIndex().then(res => {
+          if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
+            this.exportDataList = res.data.data
+          }
+        })
+      } else if (name === 'importData') {
+        this.importModalVisible = true
       }
     },
     exportModelData () {
@@ -939,6 +884,20 @@ export default {
         filename: '导入数据模版'
       }
       excel.export_array_to_excel(params)
+    },
+    importData () {
+      this.loadingImport = true
+      apiDictDataImportData(this.importTableData).then(res => {
+        this.loadingImport = false
+        if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
+          this.importModalVisible = false
+          this.getModels()
+          this.$Modal.info({
+            title: '导入结果',
+            content: res.data.message
+          })
+        }
+      })
     }
     /* **** 页面内控件标准代码（一般无须修改） end **** */
 

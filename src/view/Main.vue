@@ -44,10 +44,7 @@ import Fullscreen from '@/components/main/components/fullscreen'
 import Language from '@/components/main/components/language'
 import ErrorStore from '@/components/main/components/error-store'
 import { mapMutations, mapActions, mapGetters } from 'vuex'
-import { getNewTagList, routeEqual } from '@/libs/util'
-import Cookies from 'js-cookie'
 import util from '@/libs/utils.js'
-import routers from '@/router/routers'
 import minLogo from '@/assets/images/logo-min.jpg'
 import maxLogo from '@/assets/images/logo.jpg'
 import '@/components/main/main.less'
@@ -140,16 +137,6 @@ export default {
       this.collapsed = state
     },
     handleCloseTag (res, type, route) {
-      if (type !== 'others') {
-        if (type === 'all') {
-          this.turnToPage(this.$config.homeName)
-        } else {
-          if (routeEqual(this.$route, route)) {
-            this.closeTag(route)
-          }
-        }
-      }
-      this.setTagNavList(res)
     },
     handleClick (item) {
       this.turnToPage(item)
@@ -204,6 +191,10 @@ export default {
     this.init()
     // 获取未读消息条数
     this.getUnreadMessageCount()
+  },
+  created () {
+    // 显示打开的页面的列表
+    this.$store.commit('setOpenedList')
   }
 }
 </script>

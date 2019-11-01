@@ -58,7 +58,7 @@ router.beforeEach((to, from, next) => {
 
 router.afterEach(to => {
   Util.openNewPage(router.app, to.name, to.params, to.query)
-  // setTitle(to, router.app)
+  setTitle(to, router.app)
   iView.LoadingBar.finish()
   window.scrollTo(0, 0)
 })
