@@ -1,39 +1,38 @@
 import axios from '@/libs/api.request'
 
-export const login = ({ userName, password }) => {
-  const data = {
-    userName,
+export const login = ({ username, password }) => {
+  return axios.postRequest('/login', {
+    username,
     password
-  }
-  return axios.request({
-    url: 'login',
-    data,
-    method: 'post'
   })
 }
 
-export const getUserInfo = (token) => {
-  return axios.request({
-    url: 'get_info',
-    params: {
-      token
-    },
-    method: 'get'
-  })
+export const getUserInfo = (params) => {
+  return axios.getRequest('/me', params)
 }
 
 export const logout = (token) => {
-  return axios.request({
-    url: 'logout',
-    method: 'post'
-  })
+  return axios.getRequest('/logout', token)
 }
 
 export const getUnreadCount = () => {
-  return axios.request({
-    url: 'message/count',
-    method: 'get'
-  })
+  return axios.getRequest('/message-count')
+}
+
+export const getUserIndex = (params) => {
+  return axios.getRequest('/user/index', params)
+}
+
+export const apiRoleIndex = (params) => {
+  return axios.getRequest('/role/index', params)
+}
+
+export const apiRoleSave = (params) => {
+  return axios.postRequest('/role/save', params)
+}
+
+export const apiRoleDelete = (ids, params) => {
+  return axios.deleteRequest('/role/delete/' + ids, params)
 }
 
 export const getMessage = () => {

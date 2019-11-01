@@ -108,6 +108,15 @@ export default [
     component: Main,
     children: [
       {
+        path: 'dict',
+        name: 'dict',
+        meta: {
+          icon: 'ios-book-outline',
+          title: '字典管理'
+        },
+        component: () => import('@/view/sys/dict/index.vue')
+      },
+      {
         path: 'tree_select_page',
         name: 'tree_select_page',
         meta: {

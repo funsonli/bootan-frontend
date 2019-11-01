@@ -1,19 +1,20 @@
 import {
-  login,
-  logout,
-  getUserInfo,
-  getMessage,
-  getContentByMsgId,
-  hasRead,
-  removeReaded,
-  restoreTrash,
-  getUnreadCount
-} from '@/api/user'
+  apiLogin,
+  apiLogout,
+  apiMe,
+  // getMessage,
+  // getContentByMsgId,
+  // hasRead,
+  // removeReaded,
+  // restoreTrash,
+  apiMessageCount
+} from '@/api/index'
 import { setToken, getToken } from '@/libs/util'
+import { Message } from 'iview'
 
 export default {
   state: {
-    userName: '',
+    username: '',
     userId: '',
     avatarImgPath: '',
     token: getToken(),
@@ -32,8 +33,8 @@ export default {
     setUserId (state, id) {
       state.userId = id
     },
-    setUserName (state, name) {
-      state.userName = name
+    setUsername (state, name) {
+      state.username = name
     },
     setAccess (state, access) {
       state.access = access
@@ -74,15 +75,40 @@ export default {
   },
   actions: {
     // 登录
-    handleLogin ({ commit }, { userName, password }) {
-      userName = userName.trim()
+    handleLogin ({ commit }, { username, password }) {
+      username = username.trim()
       return new Promise((resolve, reject) => {
-        login({
-          userName,
+        apiLogin({
+          username,
           password
         }).then(res => {
           const data = res.data
-          commit('setToken', data.token)
+          if (parseInt(data.code) === 200) {
+            commit('setToken', data.data)
+          }
+          switch (parseInt(data.code)) {
+            case 401:
+              Cookies.set('userInfo', '')
+              setStore('accessToken', '')
+              router.push('/login')
+              break
+            case 403:
+              if (data.message !== null) {
+                Message.error(data.message)
+              } else {
+                Message.error('未知错误')
+              }
+              break
+            case 500:
+              alert(data.message)
+              if (data.message !== null) {
+                Message.error(data.message)
+              } else {
+                Message.error('未知错误')
+              }
+              break
+          }
+
           resolve()
         }).catch(err => {
           reject(err)
@@ -92,7 +118,7 @@ export default {
     // 退出登录
     handleLogOut ({ state, commit }) {
       return new Promise((resolve, reject) => {
-        logout(state.token).then(() => {
+        apiLogout(state.token).then(() => {
           commit('setToken', '')
           commit('setAccess', [])
           resolve()
@@ -109,10 +135,10 @@ export default {
     getUserInfo ({ state, commit }) {
       return new Promise((resolve, reject) => {
         try {
-          getUserInfo(state.token).then(res => {
+          apiMe().then(res => {
             const data = res.data
             commit('setAvatar', data.avatar)
-            commit('setUserName', data.name)
+            commit('setUsername', data.name)
             commit('setUserId', data.user_id)
             commit('setAccess', data.access)
             commit('setHasGetInfo', true)
@@ -127,9 +153,9 @@ export default {
     },
     // 此方法用来获取未读消息条数，接口只返回数值，不返回消息列表
     getUnreadMessageCount ({ state, commit }) {
-      getUnreadCount().then(res => {
+      apiMessageCount().then(res => {
         const { data } = res
-        commit('setMessageCount', data)
+        commit('setMessageCount', data.data)
       })
     },
     // 获取消息列表，其中包含未读、已读、回收站三个列表

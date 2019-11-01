@@ -1,5 +1,9 @@
 import axios from 'axios'
 import store from '@/store'
+import { getToken } from '@/libs/util'
+
+let base = '/bootan'
+
 // import { Spin } from 'iview'
 const addErrorLog = errorInfo => {
   const { statusText, status, request: { responseURL } } = errorInfo
@@ -69,6 +73,82 @@ class HttpRequest {
     options = Object.assign(this.getInsideConfig(), options)
     this.interceptors(instance, options.url)
     return instance(options)
+  }
+  getRequest (url, params) {
+    let accessToken = getToken()
+    const instance = axios.create()
+    return instance({
+      method: 'get',
+      url: `${base}${url}`,
+      params: params,
+      headers: {
+        'access-token': accessToken
+      }
+    })
+  }
+  postRequest (url, params) {
+    let accessToken = getToken()
+    const instance = axios.create()
+    return instance({
+      method: 'post',
+      url: `${base}${url}`,
+      data: params,
+      transformRequest: [function (data) {
+        let ret = ''
+        for (let it in data) {
+          ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
+        }
+        return ret
+      }],
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'access-token': accessToken
+      }
+    })
+  }
+  putRequest (url, params) {
+    let accessToken = getToken()
+    const instance = axios.create()
+    return instance({
+      method: 'put',
+      url: `${base}${url}`,
+      data: params,
+      transformRequest: [function (data) {
+        let ret = ''
+        for (let it in data) {
+          ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
+        }
+        return ret
+      }],
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'access-token': accessToken
+      }
+    })
+  }
+  deleteRequest (url, params) {
+    let accessToken = getToken()
+    const instance = axios.create()
+    return instance({
+      method: 'delete',
+      url: `${base}${url}`,
+      params: params,
+      headers: {
+        'access-token': accessToken
+      }
+    })
+  }
+  importRequest (url, params) {
+    let accessToken = getToken()
+    const instance = axios.create()
+    return instance({
+      method: 'post',
+      url: `${base}${url}`,
+      data: params,
+      headers: {
+        'access-token': accessToken
+      }
+    })
   }
 }
 export default HttpRequest
