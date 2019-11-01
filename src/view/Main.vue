@@ -35,14 +35,14 @@
   </Layout>
 </template>
 <script>
-import SideMenu from './components/side-menu'
-import HeaderBar from './components/header-bar'
-import TagsNav from './components/tags-nav'
-import User from './components/user'
-import ABackTop from './components/a-back-top'
-import Fullscreen from './components/fullscreen'
-import Language from './components/language'
-import ErrorStore from './components/error-store'
+import SideMenu from '@/components/main/components/side-menu'
+import HeaderBar from '@/components/main/components/header-bar'
+import TagsNav from '@/components/main/components/tags-nav'
+import User from '@/components/main/components/user'
+import ABackTop from '@/components/main/components/a-back-top'
+import Fullscreen from '@/components/main/components/fullscreen'
+import Language from '@/components/main/components/language'
+import ErrorStore from '@/components/main/components/error-store'
 import { mapMutations, mapActions, mapGetters } from 'vuex'
 import { getNewTagList, routeEqual } from '@/libs/util'
 import Cookies from 'js-cookie'
@@ -50,7 +50,7 @@ import util from '@/libs/utils.js'
 import routers from '@/router/routers'
 import minLogo from '@/assets/images/logo-min.jpg'
 import maxLogo from '@/assets/images/logo.jpg'
-import './main.less'
+import '@/components/main/main.less'
 export default {
   name: 'Main',
   components: {
@@ -168,20 +168,6 @@ export default {
         this.userId = userInfo.id
       })
       this.checkTag(this.$route.name)
-      // 读取未读消息数
-      // getMessageSendData({
-      //   userId: userInfo.id,
-      //   status: 0
-      // }).then(res => {
-      //   if (res.success) {
-      //     this.$store.commit('setMessageCount', res.result.totalElements)
-      //   }
-      // })
-      // // 消息开关 websocket
-      // let messageOpen = this.getStore('messageOpen')
-      // if (messageOpen !== '0') {
-      //   this.connectSrv()
-      // }
     },
     checkTag (name) {
       let openpageHasTag = this.pageTagsList.some(item => {
@@ -201,18 +187,7 @@ export default {
     }
   },
   watch: {
-    // '$route' (newRoute) {
-    //   const { name, query, params, meta } = newRoute
-    //   this.addTag({
-    //     route: { name, query, params, meta },
-    //     type: 'push'
-    //   })
-    //   this.setBreadCrumb(newRoute)
-    //   this.setTagNavList(getNewTagList(this.tagNavList, newRoute))
-    //   this.$refs.sideMenu.updateOpenName(newRoute.name)
-    // }
     $route (to) {
-      console.log('111')
       this.$store.commit('setCurrentPageName', to.name)
       let pathArr = util.setCurrentPath(this, to.name)
       if (pathArr.length > 2) {
@@ -227,21 +202,6 @@ export default {
      * @description 初始化设置面包屑导航和标签导航
      */
     this.init()
-    // this.setTagNavList()
-    // this.setHomeRoute(routers)
-    // const { name, params, query, meta } = this.$route
-    // this.addTag({
-    //   route: { name, params, query, meta }
-    // })
-    // this.setBreadCrumb(this.$route)
-    // // 设置初始语言
-    // this.setLocal(this.$i18n.locale)
-    // // 如果当前打开页面不在标签栏中，跳到homeName页
-    // if (!this.tagNavList.find(item => item.name === this.$route.name)) {
-    //   this.$router.push({
-    //     name: this.$config.homeName
-    //   })
-    // }
     // 获取未读消息条数
     this.getUnreadMessageCount()
   }

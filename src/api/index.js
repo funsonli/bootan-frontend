@@ -2,6 +2,8 @@ import axios from '@/libs/api.request'
 
 export const uploadFile = '/bootan/common/upload'
 
+export const getMenuList = '/bootan/permission/menu-list'
+
 export const apiLogin = ({ username, password }) => {
   return axios.postRequest('/login', {
     username,

@@ -17,6 +17,7 @@
 
 <script>
 import './user.less'
+import util from '@/libs/utils.js'
 import { mapActions } from 'vuex'
 export default {
   name: 'User',
@@ -42,6 +43,7 @@ export default {
       })
     },
     message () {
+      util.openNewPage(this, 'message_page')
       this.$router.push({
         name: 'message_page'
       })

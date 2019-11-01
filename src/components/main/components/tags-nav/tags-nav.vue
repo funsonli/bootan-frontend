@@ -29,7 +29,7 @@
         <transition-group name="taglist-moving-animation">
           <Tag
             type="dot"
-            v-for="(item, index) in list"
+            v-for="(item, index) in pageTagsList"
             ref="tagsPageOpened"
             :key="`tag-nav-${index}`"
             :name="item.name"
@@ -39,7 +39,7 @@
             :closable="item.name !== $config.homeName"
             :color="isCurrentTag(item) ? 'primary' : 'default'"
             @contextmenu.prevent.native="contextMenu(item, $event)"
-          >{{ showTitleInside(item) }}</Tag>
+          >{{ item.title }}</Tag>
         </transition-group>
       </div>
     </div>
@@ -52,6 +52,7 @@ import beforeClose from '@/router/before-close'
 export default {
   name: 'TagsNav',
   props: {
+    pageTagsList: Array,
     value: Object,
     list: {
       type: Array,
@@ -71,7 +72,8 @@ export default {
       menuList: {
         others: '关闭其他',
         all: '关闭所有'
-      }
+      },
+      refsTag: []
     }
   },
   computed: {

@@ -9,6 +9,9 @@ import i18n from '@/locale'
 import config from '@/config'
 import importDirective from '@/directive'
 import { directive as clickOutside } from 'v-click-outside-x'
+import { setStore, getStore, removeStore } from '@/libs/storage'
+import util from '@/libs/utils'
+import Router from 'vue-router'
 import installPlugin from '@/plugin'
 import './index.less'
 import '@/assets/icons/iconfont.css'
@@ -36,11 +39,19 @@ Vue.config.productionTip = false
  * @description 全局注册应用配置
  */
 Vue.prototype.$config = config
+Vue.prototype.setStore = setStore;
+Vue.prototype.getStore = getStore;
+Vue.prototype.removeStore = removeStore;
 /**
  * 注册指令
  */
 importDirective(Vue)
 Vue.directive('clickOutside', clickOutside)
+
+const originalPush = Router.prototype.push
+Router.prototype.push = function push(location) {
+  return originalPush.call(this, location).catch(err => err)
+}
 
 /* eslint-disable no-new */
 new Vue({
@@ -48,5 +59,9 @@ new Vue({
   router,
   i18n,
   store,
-  render: h => h(App)
+  render: h => h(App),
+  mounted() {
+      // 初始化菜单
+      util.initRouter(this);
+  }
 })
