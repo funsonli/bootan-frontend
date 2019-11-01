@@ -45,14 +45,14 @@ export const validateIDCard = (rule, value, callback) => {
 // 验证是否整数
 export const validateAge = (rule, value, callback) => {
   if (!Number(value)) {
-    callback(new Error('年龄必须为正整数'));
+    callback(new Error('年龄必须为正整数'))
   } else {
-    const re = /^[0-9]*[1-9][0-9]*$/;
-    const rsCheck = re.test(value);
+    const re = /^[0-9]*[1-9][0-9]*$/
+    const rsCheck = re.test(value)
     if (!rsCheck) {
-      callback(new Error('年龄必须为正整数'));
+      callback(new Error('年龄必须为正整数'))
     } else {
-      callback();
+      callback()
     }
   }
 }

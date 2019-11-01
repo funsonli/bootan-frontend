@@ -86,7 +86,7 @@ export default {
       editor.customConfig.zIndex = 100
       // 配置上传图片服务器端地址
       editor.customConfig.uploadImgServer = uploadFile
-      // xboot如要header中传入token鉴权
+      // 如要header中传入token鉴权
       editor.customConfig.uploadImgHeaders = {
         accessToken: that.getStore('accessToken')
       }

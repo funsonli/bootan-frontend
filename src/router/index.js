@@ -2,9 +2,9 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import store from '@/store'
 import iView from 'iview'
-import Util from '../libs/utils';
-import Cookies from 'js-cookie';
-import { routers, otherRouter } from './routers';
+import Util from '../libs/utils'
+import Cookies from 'js-cookie'
+import { routers, otherRouter } from './routers'
 import { setToken, getToken, canTurnTo, setTitle } from '@/libs/util'
 import config from '@/config'
 const { homeName } = config

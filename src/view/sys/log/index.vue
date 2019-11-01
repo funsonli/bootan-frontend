@@ -249,13 +249,13 @@ export default {
           }
         },
 
-        { title: '请求路径', key: 'requestUrl', sortable: true},
-        { title: '请求类型', key: 'requestType', sortable: true},
-        { title: '请求参数', key: 'requestParam', sortable: true},
-        { title: '请求用户', key: 'username', sortable: true},
-        { title: 'IP', key: 'ip', sortable: true},
-        { title: 'IP信息', key: 'ipInfo', sortable: true},
-        { title: '花费时间', key: 'costTime', sortable: true},
+        { title: '请求路径', key: 'requestUrl', sortable: true },
+        { title: '请求类型', key: 'requestType', sortable: true },
+        { title: '请求参数', key: 'requestParam', sortable: true },
+        { title: '请求用户', key: 'username', sortable: true },
+        { title: 'IP', key: 'ip', sortable: true },
+        { title: 'IP信息', key: 'ipInfo', sortable: true },
+        { title: '花费时间', key: 'costTime', sortable: true },
         // { title: '排序', key: 'sortOrder', sortable: true },
 
         // {
@@ -295,7 +295,7 @@ export default {
         //     }
         //   }
         // },
-        { title: '创建时间', key: 'createdAt', sortable: true, sortType: 'desc' },
+        { title: '创建时间', key: 'createdAt', sortable: true, sortType: 'desc' }
         // { title: '更新时间', key: 'updatedAt', sortable: true },
 
         // {
