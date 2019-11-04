@@ -1,6 +1,6 @@
-<!--<style lang="less">
+<style lang="less">
 @import "./index.less";
-</style>-->
+</style>
 <template>
   <div>
     <Row class="table-search-con">
@@ -19,7 +19,7 @@
             style="width: 200px"
           ></DatePicker>
         </Form-item>
-        <Form-item label="类型" prop="type">
+        <!-- <Form-item label="类型" prop="type">
           <Select
             v-model="searchForm.type"
             placeholder="请选择"
@@ -38,7 +38,7 @@
               <Option v-for="(item) in statusList" :key="item.value" :value="item.value">{{item.label}}</Option>
             </Select>
           </Form-item>
-        </span>
+        </span> -->
         <Button @click="handleSearch" type="primary" icon="ios-search">搜索</Button>
         <Button @click="handleReset">重置</Button>
         <a class="drop-down" @click="changeSearchDropDown">
@@ -48,19 +48,34 @@
       </Form>
     </Row>
     <Row class="table-operation-con">
-      <Button @click="addModal" type="primary" icon="md-add">添加</Button>
-      <Button @click="deleteBatch" icon="md-trash">批量删除</Button>
-      <Dropdown @on-click="changeOperationDropDown">
-        <Button>
-          更多操作 <Icon type="md-arrow-dropdown" />
-        </Button>
-        <DropdownMenu slot="list">
-          <DropdownItem name="exportData">导出所选数据</DropdownItem>
-          <DropdownItem name="exportAll">导出全部数据</DropdownItem>
-          <DropdownItem name="importData">导入数据</DropdownItem>
-        </DropdownMenu>
-      </Dropdown>
-      <Button @click="init" icon="md-refresh">刷新</Button>
+      <div class="table-operation-con-between">
+        <div>
+          <!-- <Button @click="addModal" type="primary" icon="md-add">添加</Button> -->
+          <Button @click="deleteBatch" icon="md-trash">批量删除</Button>
+          <Dropdown @on-click="changeOperationDropDown">
+            <Button>
+              更多操作 <Icon type="md-arrow-dropdown" />
+            </Button>
+            <DropdownMenu slot="list">
+              <DropdownItem name="exportData">导出所选数据</DropdownItem>
+              <DropdownItem name="exportAll">导出全部数据</DropdownItem>
+              <DropdownItem name="importData">导入数据</DropdownItem>
+            </DropdownMenu>
+          </Dropdown>
+          <Button @click="init" icon="md-refresh">刷新</Button>
+        </div>
+        <div>
+          <RadioGroup
+            v-model="type"
+            @on-change="changeType"
+            type="button"
+            style="margin-right:25px"
+          >
+            <Radio label="">所有</Radio>
+            <Radio v-for="(item) in typeList" :key="item.value" :label="item.value">{{item.label}}</Radio>
+          </RadioGroup>
+        </div>
+      </div>
     </Row>
     <Row>
       <Alert show-icon>
@@ -196,9 +211,13 @@ import {
 } from '@/api/index'
 import excel from '@/libs/excel'
 import { importDataColumns, importData } from './import-excel.js'
+import expandRow from '@/view/sys/log/expand.vue'
 
 export default {
   name: 'model-manage',
+  components: {
+    expandRow
+  },
   data () {
     return {
       selectCount: 0,
@@ -222,6 +241,21 @@ export default {
       },
       columns: [
         { type: 'selection', width: 60, align: 'center', fixed: 'left' },
+
+        {
+          type: 'expand',
+          width: 50,
+          fixed: 'left',
+          render: (h, params) => {
+            return h(expandRow, {
+              props: {
+                row: params.row,
+                index: params.index
+              }
+            })
+          }
+        },
+
         { type: 'index', width: 60, align: 'center', fixed: 'left' },
 
         { title: '名称', key: 'name', sortable: true, fixed: 'left' },
@@ -251,7 +285,7 @@ export default {
 
         { title: '请求路径', key: 'requestUrl', sortable: true },
         { title: '请求类型', key: 'requestType', sortable: true },
-        { title: '请求参数', key: 'requestParam', sortable: true },
+        { title: '请求参数', key: 'requestParam', sortable: true, render: (h, params) => { return h('span',  params.row.requestParam.substring(0, 15) + '...') } },
         { title: '请求用户', key: 'username', sortable: true },
         { title: 'IP', key: 'ip', sortable: true },
         { title: 'IP信息', key: 'ipInfo', sortable: true },
@@ -392,14 +426,19 @@ export default {
       },
       importTableData: [],
       importColumns: [],
+      type: 0,
       typeList: [
         {
-          label: '操作日志',
+          label: '登录日志',
           value: 1
         },
         {
-          label: '登录日志',
+          label: '操作日志',
           value: 2
+        },
+        {
+          label: '访问日志',
+          value: 3
         }
       ],
       statusList: [
@@ -631,6 +670,10 @@ export default {
     },
     handleSelectNone () {
       this.$refs.table.selectAll(false)
+    },
+    changeType () {
+      this.searchForm.type = this.type
+      this.getModels()
     },
     changeSort (e) {
       this.searchForm.sortColumn = e.key
