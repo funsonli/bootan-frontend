@@ -13,7 +13,7 @@
         <Col span="6">
           <div>
             <span>昵称: </span>
-            <span>{{ row.description }}</span>
+            <span>{{ row.nickName }}</span>
           </div>
         </Col>
         <Col span="6">
@@ -27,12 +27,6 @@
         <Col span="6">
           <span>街道地址: </span>
           <span>{{ row.address }}</span>
-        </Col>
-      </Row>
-      <Row>
-        <Col span="6">
-          <span>密码强度: </span>
-          <span>{{ row.passStrength }}</span>
         </Col>
       </Row>
     </div>
