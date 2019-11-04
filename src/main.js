@@ -9,6 +9,7 @@ import i18n from '@/locale'
 import config from '@/config'
 import importDirective from '@/directive'
 import { directive as clickOutside } from 'v-click-outside-x'
+import axios from '@/libs/api.request'
 import { setStore, getStore, removeStore } from '@/libs/storage'
 import util from '@/libs/utils'
 import Router from 'vue-router'
@@ -52,6 +53,8 @@ const originalPush = Router.prototype.push
 Router.prototype.push = function push(location) {
   return originalPush.call(this, location).catch(err => err)
 }
+
+Vue.prototype.axios = axios;
 
 /* eslint-disable no-new */
 new Vue({
