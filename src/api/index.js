@@ -246,3 +246,27 @@ export const apiLogDisable = (id, params) => {
 export const apiLogEnable = (id, params) => {
   return axios.postRequest('/log/enable/' + id, params)
 }
+
+export const apiRedisIndex = (params) => {
+  return axios.getRequest('/redis/index', params)
+}
+
+export const apiRedisSave = (params) => {
+  return axios.postRequest('/redis/save', params)
+}
+
+export const apiRedisDelete = (ids, params) => {
+  return axios.deleteRequest('/redis/delete/' + ids, params)
+}
+
+export const apiRedisInfo = (params) => {
+  return axios.getRequest('/redis/info', params)
+}
+
+export const apiRedisMemory = (params) => {
+  return axios.getRequest('/redis/memory', params)
+}
+
+export const apiRedisKeySize = (params) => {
+  return axios.getRequest('/redis/key-size', params)
+}

@@ -3,12 +3,14 @@
 </style>
 <template>
   <div>
+    <Tabs :animated="false" @on-click="handleClickTab">
+      <TabPane label="Redis管理">
     <Row class="table-search-con">
       <Form ref="searchForm" :model="searchForm" inline :label-width="70" class="search-form" @keydown.native.enter.prevent ="handleSearch">
-        <Form-item label="名称" prop="name">
-          <Input type="text" v-model="searchForm.name" clearable placeholder="请输入名称" class="search-input" @on-change="handleClear" />
+        <Form-item label="Key" prop="key">
+          <Input type="text" v-model="searchForm.key" clearable placeholder="请输入Key" class="search-input" @on-change="handleClear" />
         </Form-item>
-        <Form-item label="创建时间">
+        <!-- <Form-item label="创建时间">
           <DatePicker
             v-model="selectDate"
             type="daterange"
@@ -18,7 +20,7 @@
             placeholder="选择起始时间"
             style="width: 200px"
           ></DatePicker>
-        </Form-item>
+        </Form-item> -->
         <!-- <Form-item label="类型" prop="type">
           <Select
             v-model="searchForm.type"
@@ -41,16 +43,16 @@
         </span> -->
         <Button @click="handleSearch" type="primary" icon="ios-search">搜索</Button>
         <Button @click="handleReset">重置</Button>
-        <a class="drop-down" @click="changeSearchDropDown">
+        <!-- <a class="drop-down" @click="changeSearchDropDown">
           {{dropDownContent}}
           <Icon :type="dropDownIcon"></Icon>
-        </a>
+        </a> -->
       </Form>
     </Row>
     <Row class="table-operation-con">
       <div class="table-operation-con-between">
         <div>
-          <!-- <Button @click="addModal" type="primary" icon="md-add">添加</Button> -->
+          <Button @click="addModal" type="primary" icon="md-add">添加</Button>
           <Button @click="deleteBatch" icon="md-trash">批量删除</Button>
           <Dropdown @on-click="changeOperationDropDown">
             <Button>
@@ -63,17 +65,6 @@
             </DropdownMenu>
           </Dropdown>
           <Button @click="init" icon="md-refresh">刷新</Button>
-        </div>
-        <div>
-          <RadioGroup
-            v-model="type"
-            @on-change="changeType"
-            type="button"
-            style="margin-right:25px"
-          >
-            <Radio label="">所有</Radio>
-            <Radio v-for="(item) in typeList" :key="item.value" :label="item.value">{{item.label}}</Radio>
-          </RadioGroup>
         </div>
       </div>
     </Row>
@@ -108,14 +99,22 @@
         show-sizer
       ></Page>
     </Row>
+      </TabPane>
+      <TabPane name="monitor" label="Redis监控">
+        <monitor/>
+      </TabPane>
+    </Tabs>
 
     <!-- 添加编辑弹出框 -->
     <Modal :title="modalTitle" v-model="modelModalVisible" :mask-closable="false" :width="520" @keydown.native.enter.prevent="saveModel">
       <Form ref="modelForm" :model="modelForm" :label-width="80" :rules="modelFormValidate">
-        <FormItem label="名称" prop="name">
-          <Input v-model="modelForm.name" placeholder="请输入名称"/>
+        <FormItem label="Key" prop="key">
+          <Input v-model="modelForm.key" placeholder="请输入Key"/>
         </FormItem>
-        <FormItem label="类型" prop="type">
+        <FormItem label="Value" prop="value">
+          <Input v-model="modelForm.value" placeholder="请输入Value"/>
+        </FormItem>
+        <!-- <FormItem label="类型" prop="type">
           <Select v-model="modelForm.type" placeholder="请选择">
             <Option
               v-for="(item) in typeList"
@@ -126,7 +125,7 @@
         </FormItem>
         <FormItem label="排序" prop="sortOrder">
           <Input type="number" v-model="modelForm.sortOrder" placeholder="值越小越靠前"/>
-        </FormItem>
+        </FormItem> -->
       </Form>
       <div slot="footer">
         <Button type="text" @click="cancelModal">取消</Button>
@@ -134,7 +133,7 @@
       </div>
     </Modal>
 
-    <Drawer width="640" v-model="viewModalVisible" title="查看详情">
+    <!-- <Drawer width="640" v-model="viewModalVisible" title="查看详情">
       <div class="bootan-drawer-view">
         <Row>
           <Col span="12">名称： {{viewForm.name}} </Col>
@@ -147,7 +146,7 @@
         </Row>
         <Divider/>
       </div>
-    </Drawer>
+    </Drawer> -->
 
     <Modal :title="modalExportTitle" v-model="exportModalVisible" :mask-closable="false" @on-ok="exportModelData">
       <Form ref="exportForm" :label-width="85">
@@ -201,22 +200,24 @@
 
 <script>
 import {
-  apiLogIndex,
-  apiLogSave,
-  apiLogDelete,
-  apiLogAll,
-  apiLogImportData,
-  apiLogEnable,
-  apiLogDisable
+  apiRedisIndex,
+  apiRedisSave,
+  apiRedisDelete,
+  apiRedisAll,
+  apiRedisImportData,
+  apiRedisEnable,
+  apiRedisDisable
 } from '@/api/index'
 import excel from '@/libs/excel'
 import { importDataColumns, importData } from './import-excel.js'
-import expandRow from '@/view/sys/log/expand.vue'
+//import expandRow from '@/view/sys/redis/expand.vue'
+import monitor from "@/view/sys/redis/monitor.vue"
 
 export default {
   name: 'model-manage',
   components: {
-    expandRow
+    //expandRow
+    monitor
   },
   data () {
     return {
@@ -229,67 +230,53 @@ export default {
       dropDownContent: '展开',
       dropDownIcon: 'ios-arrow-down',
       searchForm: {
-        name: '',
-        type: '',
-        status: '',
-        pageNumber: 1,
-        pageSize: 10,
-        sort: 'createdAt',
-        order: 'desc',
-        startDate: '',
-        endDate: ''
+        key: '',
       },
       columns: [
         { type: 'selection', width: 60, align: 'center', fixed: 'left' },
 
-        {
-          type: 'expand',
-          width: 50,
-          fixed: 'left',
-          render: (h, params) => {
-            return h(expandRow, {
-              props: {
-                row: params.row,
-                index: params.index
-              }
-            })
-          }
-        },
+        // {
+        //   type: 'expand',
+        //   width: 50,
+        //   fixed: 'left',
+        //   render: (h, params) => {
+        //     return h(expandRow, {
+        //       props: {
+        //         row: params.row,
+        //         index: params.index
+        //       }
+        //     })
+        //   }
+        // },
 
         { type: 'index', width: 60, align: 'center', fixed: 'left' },
 
-        { title: '名称', key: 'name', sortable: true, fixed: 'left' },
+        { title: 'Key', key: 'key', sortable: true },
+        { title: 'Value', key: 'value', sortable: true },
 
-        {
-          title: '类型',
-          key: 'type',
-          align: 'center',
-          render: (h, params) => {
-            let re = ''
-            this.typeList.forEach((item) => {
-              if (item.value === params.row.type) {
-                re = item.label
-              }
-            })
+        // {
+        //   title: '类型',
+        //   key: 'type',
+        //   align: 'center',
+        //   render: (h, params) => {
+        //     let re = ''
+        //     this.typeList.forEach((item) => {
+        //       if (item.value === params.row.type) {
+        //         re = item.label
+        //       }
+        //     })
 
-            return h('div', re)
-          },
-          filters: [],
-          filterMultiple: false,
-          filterMethod (value, row) {
-            if (value === 1) {
-              return row.type
-            }
-          }
-        },
+        //     return h('div', re)
+        //   },
+        //   filters: [],
+        //   filterMultiple: false,
+        //   filterMethod (value, row) {
+        //     if (value === 1) {
+        //       return row.type
+        //     }
+        //   }
+        // },
 
-        { title: '请求路径', key: 'requestUrl', sortable: true },
-        { title: '请求类型', key: 'requestType', sortable: true },
-        { title: '请求参数', key: 'requestParam', sortable: true, tooltip: true, minWidth: 200 },
-        { title: '请求用户', key: 'username', sortable: true },
-        { title: 'IP', key: 'ip', sortable: true },
-        { title: 'IP信息', key: 'ipInfo', sortable: true },
-        { title: '花费时间', key: 'costTime', sortable: true },
         // { title: '排序', key: 'sortOrder', sortable: true },
 
         // {
@@ -329,94 +316,93 @@ export default {
         //     }
         //   }
         // },
-        { title: '创建时间', key: 'createdAt', sortable: true, sortType: 'desc' }
+        // { title: '创建时间', key: 'createdAt', sortable: true, sortType: 'desc' }
         // { title: '更新时间', key: 'updatedAt', sortable: true },
 
-        // {
-        //   title: '操作',
-        //   key: 'action',
-        //   align: 'center',
-        //   fixed: 'right',
-        //   width: 256,
-        //   render: (h, params) => {
-        //     return h('div', [
-        //       h(
-        //         'Button',
-        //         {
-        //           props: {
-        //             type: 'default',
-        //             size: 'small',
-        //             icon: 'ios-eye'
-        //           },
-        //           style: {
-        //             marginRight: '5px'
-        //           },
-        //           on: {
-        //             click: () => {
-        //               this.viewModal(params.row)
-        //             }
-        //           }
-        //         },
-        //         '查看'
-        //       ),
-        //       h(
-        //         'Button',
-        //         {
-        //           props: {
-        //             type: 'primary',
-        //             size: 'small',
-        //             icon: 'ios-create-outline'
-        //           },
-        //           style: {
-        //             marginRight: '5px'
-        //           },
-        //           on: {
-        //             click: () => {
-        //               this.editModal(params.row)
-        //             }
-        //           }
-        //         },
-        //         '编辑'
-        //       ),
-        //       h(
-        //         'Button',
-        //         {
-        //           props: {
-        //             type: 'error',
-        //             size: 'small',
-        //             icon: 'ios-trash'
-        //           },
-        //           on: {
-        //             click: () => {
-        //               this.deleteOne(params.row)
-        //             }
-        //           }
-        //         },
-        //         '删除'
-        //       )
-        //     ])
-        //   }
-        // }
+        {
+          title: '操作',
+          key: 'action',
+          align: 'center',
+          fixed: 'right',
+          width: 256,
+          render: (h, params) => {
+            return h('div', [
+              // h(
+              //   'Button',
+              //   {
+              //     props: {
+              //       type: 'default',
+              //       size: 'small',
+              //       icon: 'ios-eye'
+              //     },
+              //     style: {
+              //       marginRight: '5px'
+              //     },
+              //     on: {
+              //       click: () => {
+              //         this.viewModal(params.row)
+              //       }
+              //     }
+              //   },
+              //   '查看'
+              // ),
+              h(
+                'Button',
+                {
+                  props: {
+                    type: 'primary',
+                    size: 'small',
+                    icon: 'ios-create-outline'
+                  },
+                  style: {
+                    marginRight: '5px'
+                  },
+                  on: {
+                    click: () => {
+                      this.editModal(params.row)
+                    }
+                  }
+                },
+                '编辑'
+              ),
+              h(
+                'Button',
+                {
+                  props: {
+                    type: 'error',
+                    size: 'small',
+                    icon: 'ios-trash'
+                  },
+                  on: {
+                    click: () => {
+                      this.deleteOne(params.row)
+                    }
+                  }
+                },
+                '删除'
+              )
+            ])
+          }
+        }
       ],
       data: [],
       total: 0,
       modalTitle: '',
       modelModalVisible: false,
       modelForm: {
-        id: '',
-        name: '',
-        type: 1,
-        sortOrder: 50
+        key: '',
+        value: ''
       },
       modelFormValidate: {
-        name: [{ required: true, message: '名称不能为空', trigger: 'blur' }]
+        key: [{ required: true, message: 'Key不能为空', trigger: 'blur' }],
+        value: [{ required: true, message: 'Value不能为空', trigger: 'blur' }]
       },
       viewModalVisible: false,
       viewForm: {},
       modalExportTitle: '确认导出数据',
       exportModalVisible: false,
       chooseColumns: [],
-      exportColumns: [{ title: '名称', key: 'name' }],
+      exportColumns: [{ title: 'Key', key: 'key' }, { title: 'Value', key: 'value' }],
       exportDataList: [],
       exportFileName: '',
       importModalVisible: false,
@@ -425,34 +411,34 @@ export default {
         'name': ''
       },
       importTableData: [],
-      importColumns: [],
-      type: 0,
-      typeList: [
-        {
-          label: '登录日志',
-          value: 1
-        },
-        {
-          label: '操作日志',
-          value: 2
-        },
-        {
-          label: '访问日志',
-          value: 3
-        }
-      ],
-      statusList: [
-        {
-          label: '启用',
-          value: 1,
-          slot: 'open'
-        },
-        {
-          label: '禁用',
-          value: 0,
-          slot: 'close'
-        }
-      ]
+      importColumns: []
+      // type: 0,
+      // typeList: [
+      //   {
+      //     label: '登录日志',
+      //     value: 1
+      //   },
+      //   {
+      //     label: '操作日志',
+      //     value: 2
+      //   },
+      //   {
+      //     label: '访问日志',
+      //     value: 3
+      //   }
+      // ],
+      // statusList: [
+      //   {
+      //     label: '启用',
+      //     value: 1,
+      //     slot: 'open'
+      //   },
+      //   {
+      //     label: '禁用',
+      //     value: 0,
+      //     slot: 'close'
+      //   }
+      // ]
     }
   },
   created () {
@@ -487,7 +473,7 @@ export default {
       if (typeof this.searchForm.status === 'undefined') {
         this.searchForm.status = ''
       }
-      apiLogIndex(this.searchForm).then(res => {
+      apiRedisIndex(this.searchForm).then(res => {
         this.loading = false
         if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
           this.data = res.data.data.content
@@ -499,7 +485,7 @@ export default {
       this.$refs.modelForm.validate(valid => {
         if (valid) {
           this.loadingSubmit = true
-          apiLogSave(this.modelForm).then(res => {
+          apiRedisSave(this.modelForm).then(res => {
             this.loadingSubmit = false
             if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
               this.$Message.success(res.data.message)
@@ -515,10 +501,10 @@ export default {
     deleteOne (v) {
       this.$Modal.confirm({
         title: '确认删除',
-        content: '您确认要删除数据 ' + v.name + ' ?',
+        content: '您确认要删除数据 ' + v.key + ' ?',
         loading: true,
         onOk: () => {
-          apiLogDelete(v.id).then(res => {
+          apiRedisDelete(v.key).then(res => {
             this.$Modal.remove()
             if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
               this.$Message.success(res.data.message)
@@ -545,7 +531,7 @@ export default {
             ids += e.id + ','
           })
           ids = ids.substring(0, ids.length - 1)
-          apiLogDelete(ids).then(res => {
+          apiRedisDelete(ids).then(res => {
             this.$Modal.remove()
             if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
               this.$Message.success(res.data.message)
@@ -580,7 +566,7 @@ export default {
     },
     changeStatus (row, v) {
       if (row.status === 1) {
-        apiLogDisable(row.id).then(res => {
+        apiRedisDisable(row.id).then(res => {
           this.$Modal.remove()
           if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
             this.$Message.success(res.data.message)
@@ -590,7 +576,7 @@ export default {
           }
         })
       } else {
-        apiLogEnable(row.id).then(res => {
+        apiRedisEnable(row.id).then(res => {
           this.$Modal.remove()
           if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
             this.$Message.success(res.data.message)
@@ -671,6 +657,11 @@ export default {
     handleSelectNone () {
       this.$refs.table.selectAll(false)
     },
+    handleClickTab(name) {
+      if (name == "monitor") {
+        this.$Message.info("每隔5秒刷新一次数据，请耐心等待图表绘制");
+      }
+    },
     changeType () {
       this.searchForm.type = this.type
       this.getModels()
@@ -713,7 +704,7 @@ export default {
         this.exportType = 'all'
         this.exportModalVisible = true
         this.exportTitle = '确认导出全部 ' + this.total + ' 条数据'
-        apiLogAll().then(res => {
+        apiRedisAll().then(res => {
           if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
             this.exportDataList = res.data.data
           }
@@ -808,7 +799,7 @@ export default {
     },
     importData () {
       this.loadingImport = true
-      apiLogImportData(this.importTableData).then(res => {
+      apiRedisImportData(this.importTableData).then(res => {
         this.loadingImport = false
         if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
           this.importModalVisible = false

@@ -19,6 +19,9 @@ import '@/assets/icons/iconfont.css'
 import TreeTable from 'tree-table-vue'
 import VOrgTree from 'v-org-tree'
 import 'v-org-tree/dist/v-org-tree.css'
+
+import VueApexCharts from 'vue-apexcharts'
+
 // 实际打包时应该不引入mock
 /* eslint-disable */
 /*if (process.env.NODE_ENV !== 'production') require('@/mock')*/
@@ -53,6 +56,9 @@ const originalPush = Router.prototype.push
 Router.prototype.push = function push(location) {
   return originalPush.call(this, location).catch(err => err)
 }
+
+Vue.use(VueApexCharts);
+Vue.component('apexchart', VueApexCharts);
 
 Vue.prototype.axios = axios;
 
