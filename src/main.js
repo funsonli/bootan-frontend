@@ -21,6 +21,7 @@ import VOrgTree from 'v-org-tree'
 import 'v-org-tree/dist/v-org-tree.css'
 
 import VueApexCharts from 'vue-apexcharts'
+import VueStomp from 'vue-stomp'
 
 // 实际打包时应该不引入mock
 /* eslint-disable */
@@ -31,6 +32,7 @@ Vue.use(iView, {
 })
 Vue.use(TreeTable)
 Vue.use(VOrgTree)
+Vue.use(VueStomp);
 /**
  * @description 注册admin内置插件
  */

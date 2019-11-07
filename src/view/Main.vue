@@ -16,6 +16,7 @@
           <language v-if="$config.useI18n" @on-lang-change="setLocal" style="margin-right: 10px;" :lang="local"/>
           <error-store v-if="$config.plugin['error-store'] && $config.plugin['error-store'].showInHeader" :has-read="hasReadErrorPage" :count="errorCount"></error-store>
           <fullscreen v-model="isFullscreen" style="margin-right: 10px;"/>
+          <message-tip v-model="unreadCount" style="margin-right: 10px;"/>
         </header-bar>
       </Header>
       <Content class="main-content-con">
@@ -42,18 +43,21 @@ import User from '@/components/main/components/user'
 import ABackTop from '@/components/main/components/a-back-top'
 import Fullscreen from '@/components/main/components/fullscreen'
 import Language from '@/components/main/components/language'
+import MessageTip from '@/components/main/components/message-tip'
 import ErrorStore from '@/components/main/components/error-store'
 import { mapMutations, mapActions, mapGetters } from 'vuex'
 import util from '@/libs/utils.js'
 import minLogo from '@/assets/images/logo-min.jpg'
 import maxLogo from '@/assets/images/logo.jpg'
 import '@/components/main/main.less'
+import { ws } from '@/api/index'
 export default {
   name: 'Main',
   components: {
     SideMenu,
     HeaderBar,
     Language,
+    MessageTip,
     TagsNav,
     Fullscreen,
     ErrorStore,
@@ -100,6 +104,11 @@ export default {
     unreadCount () {
       return this.$store.state.user.unreadCount
     }
+  },
+  stompClient: {
+    monitorIntervalTime: 100,
+    stompReconnect: true,
+    timeout (orgCmd) {}
   },
   methods: {
     ...mapMutations([
@@ -155,6 +164,39 @@ export default {
         this.userId = userInfo.id
       })
       this.checkTag(this.$route.name)
+
+      // 消息开关 websocket
+      let messageOpen = this.getStore('messageOpen')
+      if (messageOpen !== '0') {
+        this.connectSrv()
+      }
+    },
+    onConnected (frame) {
+      console.log('连接ws成功: ' + frame)
+      // 订阅广播系统通知
+      this.$stompClient.subscribe(
+        '/topic/subscribe',
+        this.responseCallback,
+        this.onFailed
+      )
+      // 订阅点对点 通过用户id指定用户
+      this.$stompClient.subscribe(
+        '/user/' + this.userId + '/subscribe',
+        this.responseCallback,
+        this.onFailed
+      )
+    },
+    responseCallback (frame) {
+      // console.log('收到消息：' + frame.body)
+      this.$store.commit('setMessageCount', this.unreadCount + 1)
+    },
+    onFailed (frame) {
+      console.log('连接ws失败： ' + JSON.stringify(frame))
+    },
+    connectSrv () {
+      console.log('begin to connect')
+      var headers = {}
+      this.connetWM(ws, headers, this.onConnected, this.onFailed)
     },
     checkTag (name) {
       let openpageHasTag = this.pageTagsList.some(item => {

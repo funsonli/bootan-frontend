@@ -11,6 +11,8 @@ export const apiLogin = ({ username, password }) => {
   })
 }
 
+export const ws = '/bootan/ws'
+
 export const apiMe = (params) => {
   return axios.getRequest('/me', params)
 }
@@ -269,4 +271,20 @@ export const apiRedisMemory = (params) => {
 
 export const apiRedisKeySize = (params) => {
   return axios.getRequest('/redis/key-size', params)
+}
+
+export const apiFileIndex = (params) => {
+  return axios.getRequest('/file/index', params)
+}
+
+export const apiFileSave = (params) => {
+  return axios.postRequest('/file/save', params)
+}
+
+export const apiFileDelete = (ids, params) => {
+  return axios.deleteRequest('/file/delete/' + ids, params)
+}
+
+export const apiFileCopy = (params) => {
+  return axios.deleteRequest('/file/copy/' + params)
 }

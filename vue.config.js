@@ -42,6 +42,7 @@ module.exports = {
       '/bootan': {
         target: 'http://127.0.0.1:8686', // 后台地址
         changeOrigin: true,
+        ws: true,
         pathRewrite: {
           '^/login': '/'
         }
