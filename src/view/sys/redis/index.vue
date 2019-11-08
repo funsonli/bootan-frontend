@@ -107,7 +107,7 @@
 
     <!-- 添加编辑弹出框 -->
     <Modal :title="modalTitle" v-model="modelModalVisible" :mask-closable="false" :width="520" @keydown.native.enter.prevent="saveModel">
-      <Form ref="modelForm" :model="modelForm" :label-width="80" :rules="modelFormValidate">
+      <Form ref="modelForm" :model="modelForm" :label-width="88" :rules="modelFormValidate">
         <FormItem label="Key" prop="key">
           <Input v-model="modelForm.key" placeholder="请输入Key"/>
         </FormItem>

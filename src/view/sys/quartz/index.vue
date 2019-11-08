@@ -3,114 +3,133 @@
 </style>-->
 <template>
   <div>
-    <Row type="flex" justify="space-between" class="code-row-bg">
-
-      <Col v-if="expand" span="5">
-        <Row class="table-operation-con">
-          <Button @click="addModalDict" type="primary" icon="md-add">添加</Button>
-          <Dropdown @on-click="changeOperationDropDownDict">
-            <Button>
-              更多操作
-              <Icon type="md-arrow-dropdown"/>
-            </Button>
-            <DropdownMenu slot="list">
-              <DropdownItem name="editModalDict">编辑</DropdownItem>
-              <DropdownItem name="deleteOneDict">删除</DropdownItem>
-            </DropdownMenu>
-          </Dropdown>
-          <Button @click="initDict" icon="md-refresh">刷新</Button>
-        </Row>
-        <Alert show-icon>
-          当前选择：
-          <span class="select-title">{{selectTitle}}</span>
-          <a class="select-clear" v-if="selectTitle" @click="handleSelectNoneDict">取消选择</a>
-        </Alert>
-        <Input
-          v-model="searchKeyDict"
-          suffix="ios-search"
-          @on-change="handleSearchDict"
-          placeholder="输入名称搜索"
-          clearable
-        />
-        <div class="tree-bar" :style="{maxHeight: maxHeight}">
-          <Tree ref="tree" :data="dataDict" @on-select-change="changeSelect"></Tree>
-        </div>
-        <Spin size="large" fix v-if="loadingDict"></Spin>
-      </Col>
-
-      <div class="expand">
-        <Icon :type="expandIcon" size="16" class="icon" @click="changeExpand"/>
-      </div>
-
-      <Col :span="span">
-
-        <Row class="table-search-con">
-          <Form ref="searchForm" :model="searchForm" inline :label-width="70" class="search-form" @keydown.native.enter.prevent ="handleSearch">
-            <Form-item label="名称" prop="name">
-              <Input type="text" v-model="searchForm.name" clearable placeholder="请输入名称" class="search-input" @on-change="handleClear" />
-            </Form-item>
-            <Button @click="handleSearch" type="primary" icon="ios-search">搜索</Button>
-            <Button @click="handleReset">重置</Button>
-          </Form>
-        </Row>
-        <Row class="table-operation-con">
-          <Button @click="addModal" type="primary" icon="md-add">添加</Button>
-          <Button @click="deleteBatch" icon="md-trash">批量删除</Button>
-          <Dropdown @on-click="changeOperationDropDown">
-            <Button>
-              更多操作 <Icon type="md-arrow-dropdown" />
-            </Button>
-            <DropdownMenu slot="list">
-              <DropdownItem name="exportData">导出所选数据</DropdownItem>
-              <DropdownItem name="exportAll">导出全部数据</DropdownItem>
-            </DropdownMenu>
-          </Dropdown>
-          <Button @click="initDictData" icon="md-refresh">刷新</Button>
-        </Row>
-        <Row>
-          <Alert show-icon>
-            已选择 <span class="select-count">{{selectCount}}</span> 项
-            <a class="select-clear" @click="handleSelectNone">清空</a>
-          </Alert>
-        </Row>
-        <Row>
-          <Table
-            :loading="loading"
-            border
-            :columns="columns"
-            :data="data"
-            ref="table"
-            sortable="custom"
-            @on-sort-change="changeSort"
-            @on-selection-change="changeSelection"
-          ></Table>
-        </Row>
-        <Row class="table-page-con" type="flex" justify="end">
-          <Page
-            :current="searchForm.pageNumber"
-            :total="total"
-            :page-size="searchForm.pageSize"
-            @on-change="changePage"
-            @on-page-size-change="changePageSize"
-            :page-size-opts="[10,20,50]"
-            show-total
-            show-elevator
-            show-sizer
-          ></Page>
-        </Row>
-
-      </Col>
+    <Row class="table-search-con">
+      <Form ref="searchForm" :model="searchForm" inline :label-width="70" class="search-form" @keydown.native.enter.prevent ="handleSearch">
+        <Form-item label="名称" prop="name">
+          <Input type="text" v-model="searchForm.name" clearable placeholder="请输入名称" class="search-input" @on-change="handleClear" />
+        </Form-item>
+        <Form-item label="任务类名" prop="jobClassName">
+          <Input type="text" v-model="searchForm.jobClassName" clearable placeholder="请输入定时任务类名" class="search-input" @on-change="handleClear" />
+        </Form-item>
+        <Form-item label="描述" prop="description">
+          <Input type="text" v-model="searchForm.description" clearable placeholder="请输入描述" class="search-input" @on-change="handleClear" />
+        </Form-item>
+        <Form-item label="状态" prop="status">
+          <Select
+            v-model="searchForm.status"
+            placeholder="请选择"
+            clearable
+            style="width: 200px" >
+            <Option v-for="(item) in statusList" :key="item.value" :value="item.value">{{item.label}}</Option>
+          </Select>
+        </Form-item>
+        <!-- <Form-item label="类型" prop="type">
+          <Select
+            v-model="searchForm.type"
+            placeholder="请选择"
+            clearable
+            style="width: 200px" >
+            <Option v-for="(item) in typeList" :key="item.value" :value="item.value">{{item.label}}</Option>
+          </Select>
+        </Form-item> -->
+        <span v-if="searchDropDown">
+          <Form-item label="创建时间">
+            <DatePicker
+              v-model="selectDate"
+              type="daterange"
+              format="yyyy-MM-dd"
+              clearable
+              @on-change="changeSelectDateRange"
+              placeholder="选择起始时间"
+              style="width: 200px"
+            ></DatePicker>
+          </Form-item>
+        </span>
+        <Button @click="handleSearch" type="primary" icon="ios-search">搜索</Button>
+        <Button @click="handleReset">重置</Button>
+        <a class="drop-down" @click="changeSearchDropDown">
+          {{dropDownContent}}
+          <Icon :type="dropDownIcon"></Icon>
+        </a>
+      </Form>
+    </Row>
+    <Row class="table-operation-con">
+      <Button @click="addModal" type="primary" icon="md-add">创建新任务</Button>
+      <Button @click="deleteBatch" icon="md-trash">批量删除</Button>
+      <Dropdown @on-click="changeOperationDropDown">
+        <Button>
+          更多操作 <Icon type="md-arrow-dropdown" />
+        </Button>
+        <DropdownMenu slot="list">
+          <DropdownItem name="exportData">导出所选数据</DropdownItem>
+          <DropdownItem name="exportAll">导出全部数据</DropdownItem>
+          <DropdownItem name="importData">导入数据</DropdownItem>
+        </DropdownMenu>
+      </Dropdown>
+      <Button @click="init" icon="md-refresh">刷新</Button>
+    </Row>
+    <Row>
+      <Alert show-icon>
+        已选择<span class="select-count">{{selectCount}}</span> 项
+        <a class="select-clear" @click="handleSelectNone">清空</a>
+      </Alert>
+    </Row>
+    <Row>
+      <Table
+        :loading="loading"
+        border
+        :columns="columns"
+        :data="data"
+        ref="table"
+        sortable="custom"
+        @on-sort-change="changeSort"
+        @on-selection-change="changeSelection"
+      ></Table>
+    </Row>
+    <Row class="table-page-con" type="flex" justify="end">
+      <Page
+        :current="searchForm.pageNumber"
+        :total="total"
+        :page-size="searchForm.pageSize"
+        @on-change="changePage"
+        @on-page-size-change="changePageSize"
+        :page-size-opts="[10,20,50]"
+        show-total
+        show-elevator
+        show-sizer
+      ></Page>
     </Row>
 
-    <!-- 添加编辑弹出框 -->
+    <!-- 创建编辑弹出框 -->
     <Modal :title="modalTitle" v-model="modelModalVisible" :mask-closable="false" :width="520" @keydown.native.enter.prevent="saveModel">
       <Form ref="modelForm" :model="modelForm" :label-width="88" :rules="modelFormValidate">
         <FormItem label="名称" prop="name">
           <Input v-model="modelForm.name" placeholder="请输入名称"/>
         </FormItem>
-        <FormItem label="值" prop="value">
-          <Input v-model="modelForm.value" placeholder="请输入值"/>
+        <FormItem label="任务类名" prop="jobClassName">
+          <Input v-model="modelForm.jobClassName" placeholder="com.funsonli.bootan.module.base.SamplJob"/>
         </FormItem>
+        <FormItem label="cron表达式" prop="cronExpression">
+          <Input v-model="modelForm.cronExpression" placeholder="请输入cron表达式"/>
+          <a target="_blank" href="http://qqe2.com/cron">
+            <Icon type="md-arrow-dropright-circle" size="14" style="margin:0 3px 3px 0;"/>在线cron表达式生成
+          </a>
+        </FormItem>
+        <FormItem label="参数" prop="parameter">
+          <Input v-model="modelForm.parameter" placeholder="请输入参数"/>
+        </FormItem>
+        <FormItem label="描述" prop="description">
+          <Input v-model="modelForm.description" placeholder="请输入描述"/>
+        </FormItem>
+        <!-- <FormItem label="类型" prop="type">
+          <Select v-model="modelForm.type" placeholder="请选择">
+            <Option
+              v-for="(item) in typeList"
+              :key="item.value"
+              :value="item.value"
+            >{{item.label}}</Option>
+          </Select>
+        </FormItem> -->
         <FormItem label="排序" prop="sortOrder">
           <Input type="number" v-model="modelForm.sortOrder" placeholder="值越小越靠前"/>
         </FormItem>
@@ -118,25 +137,6 @@
       <div slot="footer">
         <Button type="text" @click="cancelModal">取消</Button>
         <Button type="primary" :loading="loadingSubmit" @click="saveModel">提交</Button>
-      </div>
-    </Modal>
-
-    <Modal :title="modalTitleDict" v-model="modelModalVisibleDict" :mask-closable="false" :width="500" :styles="{top: '30px'}" >
-      <Form ref="modelFormDict" :model="modelFormDict" :label-width="75" :rules="modelFormValidateDict">
-        <FormItem label="类型" prop="name">
-          <Input v-model="modelFormDict.name" placeholder="请输入类型"/>
-        </FormItem>
-        <FormItem label="标签" prop="title">
-          <Input v-model="modelFormDict.title" placeholder="请输入标签"/>
-        </FormItem>
-        <FormItem label="排序值" prop="sortOrder">
-          <InputNumber :max="1000" :min="0" v-model="modelFormDict.sortOrder"></InputNumber>
-          <span style="margin-left:5px">值越小越靠前</span>
-        </FormItem>
-      </Form>
-      <div slot="footer">
-        <Button type="text" @click="modelModalVisibleDict=false">取消</Button>
-        <Button type="primary" :loading="loadingSubmit" @click="saveModelDict">提交</Button>
       </div>
     </Modal>
 
@@ -207,16 +207,13 @@
 
 <script>
 import {
-  apiDictDataIndex,
-  apiDictDataSave,
-  apiDictDataDelete,
-  apiDictDataImportData,
-  apiDictDataEnable,
-  apiDictDataDisable,
-  apiDictAll,
-  apiDictSave,
-  apiDictDelete,
-  apiDictSearch
+  apiQuartzIndex,
+  apiQuartzSave,
+  apiQuartzDelete,
+  apiQuartzAll,
+  apiQuartzImportData,
+  apiQuartzEnable,
+  apiQuartzDisable
 } from '@/api/index'
 import excel from '@/libs/excel'
 import { importDataColumns, importData } from './import-excel.js'
@@ -224,26 +221,21 @@ import { importDataColumns, importData } from './import-excel.js'
 export default {
   name: 'model-manage',
   data () {
+    let that = this
     return {
-      selectNode: {},
       selectCount: 0,
       loading: true,
-      loadingDict: false,
       loadingSubmit: false,
       loadingImport: false,
-      expand: true,
-      expandIcon: 'ios-arrow-back',
-      span: 18,
-      selectTitle: '',
-      searchKey: '',
-      searchKeyDict: '',
-      maxHeight: '520px',
+      selectDate: null,
       searchDropDown: false,
       dropDownContent: '展开',
       dropDownIcon: 'ios-arrow-down',
       searchForm: {
         name: '',
-        value: '',
+        jobClassName: '',
+        description: '',
+        type: '',
         status: '',
         pageNumber: 1,
         pageSize: 10,
@@ -257,7 +249,33 @@ export default {
         { type: 'index', width: 60, align: 'center', fixed: 'left' },
 
         { title: '名称', key: 'name', sortable: true, fixed: 'left' },
-        { title: '数据值', key: 'value', sortable: true },
+        { title: '定时任务类名', key: 'jobClassName', sortable: true },
+        { title: 'cron表达式', key: 'cronExpression', sortable: true },
+        { title: '传递参数', key: 'parameter', sortable: true },
+        { title: '描述', key: 'description', sortable: true },
+
+        // {
+        //   title: '类型',
+        //   key: 'type',
+        //   align: 'center',
+        //   render: (h, params) => {
+        //     let re = ''
+        //     this.typeList.forEach((item) => {
+        //       if (item.value === params.row.type) {
+        //         re = item.label
+        //       }
+        //     })
+
+        //     return h('div', re)
+        //   },
+        //   filters: [],
+        //   filterMultiple: false,
+        //   filterRemote (value, row) {
+        //     that.searchForm.type = value[0]
+        //     that.searchForm.type = that.searchForm.type + ''
+        //     that.getModels()
+        //   }
+        // },
 
         { title: '排序', key: 'sortOrder', sortable: true },
 
@@ -288,18 +306,14 @@ export default {
           },
           filters: [],
           filterMultiple: false,
-          filterMethod (value, row) {
-            if (value === 1) {
-              row.status = 1
-              return row.status
-            } else if (value !== 1) {
-              row.status = 0
-              return row.status
-            }
+          filterRemote (value, row) {
+            that.searchForm.status = value[0]
+            that.searchForm.status = that.searchForm.status + ''
+            that.getModels()
           }
         },
         { title: '创建时间', key: 'createdAt', sortable: true, sortType: 'desc' },
-        { title: '更新时间', key: 'updatedAt', sortable: true },
+        // { title: '更新时间', key: 'updatedAt', sortable: true },
 
         {
           title: '操作',
@@ -309,6 +323,25 @@ export default {
           width: 256,
           render: (h, params) => {
             return h('div', [
+              h(
+                'Button',
+                {
+                  props: {
+                    type: 'default',
+                    size: 'small',
+                    icon: 'ios-eye'
+                  },
+                  style: {
+                    marginRight: '5px'
+                  },
+                  on: {
+                    click: () => {
+                      this.viewModal(params.row)
+                    }
+                  }
+                },
+                '查看'
+              ),
               h(
                 'Button',
                 {
@@ -349,38 +382,30 @@ export default {
         }
       ],
       data: [],
-      dataDict: [],
       total: 0,
       modalTitle: '',
       modelModalVisible: false,
       modelForm: {
         id: '',
         name: '',
-        value: '',
+        cronExpression: '',
+        jobClassName: '',
+        parameter: '',
+        description: '',
+        type: 1,
         sortOrder: 50
       },
       modelFormValidate: {
-        name: [{ required: true, message: '名称不能为空', trigger: 'blur' }],
-        value: [{ required: true, message: '值不能为空', trigger: 'blur' }]
-      },
-      modalTitleDict: '',
-      modelModalVisibleDict: false,
-      modelFormDict: {
-        id: '',
-        name: '',
-        title: '',
-        sortOrder: 50
-      },
-      modelFormValidateDict: {
-        name: [{ required: true, message: '类型不能为空', trigger: 'blur' }],
-        title: [{ required: true, message: '名称不能为空', trigger: 'blur' }]
+        cronExpression: [{ required: true, message: 'cron表达式', trigger: 'blur' }],
+        jobClassName: [{ required: true, message: '定时任务类名不能为空', trigger: 'blur' }],
+        name: [{ required: true, message: '名称不能为空', trigger: 'blur' }]
       },
       viewModalVisible: false,
       viewForm: {},
       modalExportTitle: '确认导出数据',
       exportModalVisible: false,
       chooseColumns: [],
-      exportColumns: [{ title: '名称', key: 'name' }, { title: '值', key: 'value' }],
+      exportColumns: [{ title: '名称', key: 'name' }],
       exportDataList: [],
       exportFileName: '',
       importModalVisible: false,
@@ -402,12 +427,12 @@ export default {
       ],
       statusList: [
         {
-          label: '启用',
+          label: '运行中',
           value: 1,
           slot: 'open'
         },
         {
-          label: '禁用',
+          label: '暂停中',
           value: 0,
           slot: 'close'
         }
@@ -432,16 +457,6 @@ export default {
   },
   methods: {
     init () {
-      this.getModelsDict()
-      this.getModels()
-    },
-    initDict () {
-      this.getModelsDict()
-      this.selectNode = {}
-      this.editTitle = ''
-      this.getModels()
-    },
-    initDictData () {
       this.getModels()
     },
 
@@ -449,16 +464,14 @@ export default {
     getModels () {
     // 多条件带分页搜索列表
       this.loading = true
-      if (this.selectNode.id) {
-        this.searchForm.dictId = this.selectNode.id
-      } else {
-        delete this.searchForm.dictId
-      }
       // 避免后台默认值
-      if (typeof this.searchForm.status === 'undefined') {
+      if (typeof this.searchForm.type === 'undefined' || this.searchForm.type === 'undefined') {
+        this.searchForm.type = ''
+      }
+      if (typeof this.searchForm.status === 'undefined' || this.searchForm.status === 'undefined') {
         this.searchForm.status = ''
       }
-      apiDictDataIndex(this.searchForm).then(res => {
+      apiQuartzIndex(this.searchForm).then(res => {
         this.loading = false
         if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
           this.data = res.data.data.content
@@ -466,25 +479,11 @@ export default {
         }
       })
     },
-    getModelsDict () {
-      apiDictAll(this.searchForm).then(res => {
-        this.loadingDict = true
-        if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
-          this.loadingDict = false
-          this.dataDict = res.data.data.content
-        }
-      })
-    },
     saveModel () {
       this.$refs.modelForm.validate(valid => {
         if (valid) {
           this.loadingSubmit = true
-          if (this.modalType === 0) {
-            delete this.modelForm.id
-            this.modelForm.dictId = this.selectNode.id
-          }
-
-          apiDictDataSave(this.modelForm).then(res => {
+          apiQuartzSave(this.modelForm).then(res => {
             this.loadingSubmit = false
             if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
               this.$Message.success(res.data.message)
@@ -497,30 +496,13 @@ export default {
         }
       })
     },
-    saveModelDict () {
-      this.$refs.modelFormDict.validate(valid => {
-        if (valid) {
-          this.submitLoading = true
-          apiDictSave(this.modelFormDict).then(res => {
-            this.submitLoading = false
-            if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
-              this.$Message.success(res.data.message)
-              this.getModelsDict()
-              this.modelModalVisibleDict = false
-            } else {
-              this.$Message.success(res.data.message)
-            }
-          })
-        }
-      })
-    },
     deleteOne (v) {
       this.$Modal.confirm({
         title: '确认删除',
         content: '您确认要删除数据 ' + v.name + ' ?',
         loading: true,
         onOk: () => {
-          apiDictDataDelete(v.id).then(res => {
+          apiQuartzDelete(v.id).then(res => {
             this.$Modal.remove()
             if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
               this.$Message.success(res.data.message)
@@ -547,7 +529,7 @@ export default {
             ids += e.id + ','
           })
           ids = ids.substring(0, ids.length - 1)
-          apiDictDataDelete(ids).then(res => {
+          apiQuartzDelete(ids).then(res => {
             this.$Modal.remove()
             if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
               this.$Message.success(res.data.message)
@@ -560,91 +542,13 @@ export default {
         }
       })
     },
-    deleteOneDict () {
-      if (!this.selectNode.id) {
-        this.$Message.warning('您还未选择要删除的字典')
-        return
-      }
-      this.$Modal.confirm({
-        title: '确认删除',
-        content: '您确认要删除 ' + this.selectNode.title + ' ?',
-        loading: true,
-        onOk: () => {
-          apiDictDelete(this.selectNode.id).then(res => {
-            this.$Modal.remove()
-            if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
-              this.$Message.success(res.data.message)
-              this.getModelsDict()
-            } else {
-              this.$Message.success(res.data.message)
-            }
-          })
-        }
-      })
-    },
     /* **** 和后台交互代码区块 end **** */
 
     /* **** 页面内按钮交互代码 begin **** */
-    changeExpand () {
-      this.expand = !this.expand
-      if (this.expand) {
-        this.expandIcon = 'ios-arrow-back'
-        this.span = 18
-      } else {
-        this.expandIcon = 'ios-arrow-forward'
-        this.span = 23
-      }
-    },
-    changeSelect (v) {
-      if (v.length > 0) {
-        this.$refs.modelFormDict.resetFields()
-        // 转换null为''
-        for (let attr in v[0]) {
-          if (v[0][attr] == null) {
-            v[0][attr] = ''
-          }
-        }
-        let str = JSON.stringify(v[0])
-        let data = JSON.parse(str)
-        this.selectNode = data
-        this.modelFormDict = data
-        this.selectTitle = data.title + '(' + data.name + ')'
-        // 重新加载表
-        this.searchForm.pageNumber = 1
-        this.searchForm.pageSize = 10
-        this.getModels()
-      } else {
-        this.cancelEdit()
-      }
-    },
-    cancelEdit () {
-      let data = this.$refs.tree.getSelectedNodes()[0]
-      if (data) {
-        data.selected = false
-      }
-      // 取消选择后获取全部数据
-      this.selectNode = {}
-      this.editTitle = ''
-      this.getModels()
-    },
     handleSearch () {
       this.searchForm.pageNumber = 1
       this.searchForm.pageSize = 10
       this.getModels()
-    },
-    handleSearchDict () {
-      if (this.searchKeyDict) {
-        this.loadingDict = true
-        let keyword = this.searchKeyDict
-        apiDictSearch(keyword).then(res => {
-          this.loadingDict = false
-          if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
-            this.dataDict = res.data.data.content
-          }
-        })
-      } else {
-        this.initDict()
-      }
     },
     handleClear (e) {
       if (e.target.value === '') {
@@ -652,7 +556,14 @@ export default {
       }
     },
     handleReset () {
-      this.$refs.searchForm.resetFields()
+      this.searchForm.type = this.searchForm.type.toString()
+      this.searchForm.status = this.searchForm.status.toString()
+      this.$nextTick(() => {
+        this.$refs.searchForm.resetFields()
+      })
+      this.searchForm.startDate = ''
+      this.searchForm.endDate = ''
+      this.selectDate = null
       this.searchForm.pageNumber = 1
       this.searchForm.pageSize = 10
       // 重新加载数据
@@ -660,7 +571,7 @@ export default {
     },
     changeStatus (row, v) {
       if (row.status === 1) {
-        apiDictDataDisable(row.id).then(res => {
+        apiQuartzDisable(row.id).then(res => {
           this.$Modal.remove()
           if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
             this.$Message.success(res.data.message)
@@ -670,7 +581,7 @@ export default {
           }
         })
       } else {
-        apiDictDataEnable(row.id).then(res => {
+        apiQuartzEnable(row.id).then(res => {
           this.$Modal.remove()
           if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
             this.$Message.success(res.data.message)
@@ -683,23 +594,38 @@ export default {
     },
     addModal () {
       this.modalType = 0
-      this.modalTitle = '添加'
+      this.modalTitle = '创建新任务'
       this.$refs.modelForm.resetFields()
       delete this.modelForm.id
       this.modelModalVisible = true
     },
-    addModalDict () {
-      this.modalType = 0
-      this.modalTitleDict = '添加字典'
-      this.$refs.modelFormDict.resetFields()
-      this.modelModalVisibleDict = true
-    },
-
-    editModal (v) {
-      if (!this.selectNode.id) {
-        this.$Message.warning('请先选择一个字典类别')
-        return
+    viewModal (v) {
+      let list = []
+      for (let attr in v) {
+        list[attr] = v[attr]
+        if (v[attr] == null) {
+          list[attr] = ''
+        } else {
+          if (attr === 'type') {
+            this.typeList.forEach((item) => {
+              if (item.value === v[attr]) {
+                list[attr] = item.label
+              }
+            })
+          } else if (attr === 'status') {
+            this.statusList.forEach((item) => {
+              if (item.value === v[attr]) {
+                list[attr] = item.label
+              }
+            })
+          }
+        }
       }
+
+      this.viewForm = Object.assign({}, list)
+      this.viewModalVisible = true
+    },
+    editModal (v) {
       this.modalType = 1
       this.modalTitle = '编辑'
       this.$refs.modelForm.resetFields()
@@ -714,14 +640,19 @@ export default {
       this.modelForm = modelInfo
       this.modelModalVisible = true
     },
-    editModalDict (v) {
-      this.modalType = 1
-      this.modalTitle = '编辑'
-      this.modelModalVisibleDict = true
-    },
     /* **** 页面内按钮交互代码 end **** */
 
     /* **** 页面内控件标准代码（一般无须修改） begin **** */
+    changeSearchDropDown () {
+      if (this.searchDropDown) {
+        this.dropDownContent = '展开'
+        this.dropDownIcon = 'ios-arrow-down'
+      } else {
+        this.dropDownContent = '收起'
+        this.dropDownIcon = 'ios-arrow-up'
+      }
+      this.searchDropDown = !this.searchDropDown
+    },
     changeSelectDateRange (v) {
       if (v) {
         this.searchForm.startDate = v[0]
@@ -730,16 +661,6 @@ export default {
     },
     handleSelectNone () {
       this.$refs.table.selectAll(false)
-    },
-    handleSelectNoneDict () {
-      let data = this.$refs.tree.getSelectedNodes()[0]
-      if (data) {
-        data.selected = false
-      }
-      this.selectTitle = ''
-      this.$refs.modelForm.resetFields()
-      delete this.modelForm.id
-      this.getModels()
     },
     changeSort (e) {
       this.searchForm.sortColumn = e.key
@@ -766,19 +687,6 @@ export default {
     cancelModal () {
       this.modelModalVisible = false
     },
-    changeOperationDropDownDict (name) {
-      if (name === 'editModalDict') {
-        if (!this.selectNode.id) {
-          this.$Message.warning('您还未选择要编辑的数据')
-          return
-        }
-        this.editModalDict()
-      } else if (name === 'deleteOneDict') {
-        this.deleteOneDict()
-      } else if (name === 'initDict') {
-        this.initDict()
-      }
-    },
     changeOperationDropDown (name) {
       if (name === 'exportData') {
         if (parseInt(this.selectCount) <= 0) {
@@ -792,7 +700,7 @@ export default {
         this.exportType = 'all'
         this.exportModalVisible = true
         this.exportTitle = '确认导出全部 ' + this.total + ' 条数据'
-        apiDictDataIndex().then(res => {
+        apiQuartzAll().then(res => {
           if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
             this.exportDataList = res.data.data
           }
@@ -887,7 +795,7 @@ export default {
     },
     importData () {
       this.loadingImport = true
-      apiDictDataImportData(this.importTableData).then(res => {
+      apiQuartzImportData(this.importTableData).then(res => {
         this.loadingImport = false
         if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
           this.importModalVisible = false

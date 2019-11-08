@@ -94,7 +94,7 @@
     </Row>
 
     <Modal :title="modalTitle" v-model="modelModalVisible" :mask-closable="false" :width="520" @keydown.native.enter.prevent="saveModelNew">
-      <Form ref="modelFormNew" :model="modelFormNew" :label-width="80" :rules="modelFormValidate">
+      <Form ref="modelFormNew" :model="modelFormNew" :label-width="88" :rules="modelFormValidate">
         <FormItem label="上级名称" v-if="showParent">
           {{modelForm.name}}
         </FormItem>

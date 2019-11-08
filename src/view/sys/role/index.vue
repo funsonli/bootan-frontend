@@ -61,7 +61,7 @@
 
     <!-- 添加和编辑 -->
     <Modal :title="modalTitle" v-model="modelModalVisible" :mask-closable="false" :width="500" @keydown.native.enter.prevent="saveModel">
-      <Form ref="modelForm" :model="modelForm" :label-width="80" :rules="modelFormValidate">
+      <Form ref="modelForm" :model="modelForm" :label-width="88" :rules="modelFormValidate">
         <FormItem label="角色名称" prop="name">
           <Input v-model="modelForm.name" placeholder="按照Spring Security约定建议以‘ROLE_’开头"/>
         </FormItem>
