@@ -34,8 +34,8 @@ import {
   apiRedisInfo
 } from '@/api/index'
 export default {
-  name: "monitor",
-  data() {
+  name: 'monitor',
+  data () {
     return {
       memory: {
         series: [],
@@ -43,7 +43,7 @@ export default {
           chart: {
             animations: {
               enabled: true,
-              easing: "linear",
+              easing: 'linear',
               dynamicAnimation: {
                 speed: 5000
               }
@@ -59,11 +59,11 @@ export default {
             enabled: false
           },
           stroke: {
-            curve: "smooth"
+            curve: 'smooth'
           },
           title: {
-            text: "Redis内存实时占用情况（KB）",
-            align: "left"
+            text: 'Redis内存实时占用情况（KB）',
+            align: 'left'
           },
           markers: {
             size: 0
@@ -83,7 +83,7 @@ export default {
           chart: {
             animations: {
               enabled: true,
-              easing: "linear",
+              easing: 'linear',
               dynamicAnimation: {
                 speed: 5000
               }
@@ -98,13 +98,13 @@ export default {
           dataLabels: {
             enabled: false
           },
-          colors: ["#f5564e"],
+          colors: ['#f5564e'],
           stroke: {
-            curve: "smooth"
+            curve: 'smooth'
           },
           title: {
-            text: "Redis key实时数量（个）",
-            align: "left"
+            text: 'Redis key实时数量（个）',
+            align: 'left'
           },
           markers: {
             size: 0
@@ -120,59 +120,59 @@ export default {
       },
       columns: [
         {
-          key: "key",
+          key: 'key',
           minWidth: 200
         },
         {
-          key: "description",
+          key: 'description',
           minWidth: 500
         },
         {
-          key: "value",
+          key: 'value',
           width: 400
         }
       ],
       redisInfo: [],
       timer: null
-    };
+    }
   },
   methods: {
-    init() {
-      this.getData();
-      this.getInfo();
+    init () {
+      this.getData()
+      this.getInfo()
     },
     // 统计
-    getData() {
-      let minMemory = 1e10;
-      let minSize = 1e10;
-      let maxMemory = -1e10;
-      let maxSize = -1e10;
+    getData () {
+      let minMemory = 1e10
+      let minSize = 1e10
+      let maxMemory = -1e10
+      let maxSize = -1e10
       this.timer = setInterval(() => {
         // 内存
         apiRedisMemory().then(res => {
-          let currentMemory = Number(res.data.data.memory) / 1024;
+          let currentMemory = Number(res.data.data.memory) / 1024
           // 更新最大最小值
           if (currentMemory < minMemory) {
-            minMemory = currentMemory;
+            minMemory = currentMemory
           }
           if (currentMemory > maxMemory) {
-            maxMemory = currentMemory;
+            maxMemory = currentMemory
           }
 
-          this.memory.data.push(Number(currentMemory.toFixed(2)));
-          this.memory.xdata.push(res.data.data.time);
+          this.memory.data.push(Number(currentMemory.toFixed(2)))
+          this.memory.xdata.push(res.data.data.time)
           // 5个点
           if (this.memory.data.length >= 6) {
-            this.memory.data.shift();
-            this.memory.xdata.shift();
+            this.memory.data.shift()
+            this.memory.xdata.shift()
           }
           // 更新点信息
           this.$refs.memoryInfo.updateSeries([
             {
-              name: "内存(KB)",
+              name: '内存(KB)',
               data: this.memory.data
             }
-          ]);
+          ])
 
           // 更新最大最小值
           this.$refs.memoryInfo.updateOptions(
@@ -187,33 +187,33 @@ export default {
             },
             true,
             true
-          );
-        });
+          )
+        })
         // 键值
         apiRedisKeySize().then(res => {
-          let currentSize = res.data.data.keySize;
+          let currentSize = res.data.data.keySize
           // 更新最大最小值
           if (currentSize < minSize) {
-            minSize = currentSize;
+            minSize = currentSize
           }
           if (currentSize > maxSize) {
-            maxSize = currentSize;
+            maxSize = currentSize
           }
 
-          this.key.data.push(currentSize);
-          this.key.xdata.push(res.data.data.time);
+          this.key.data.push(currentSize)
+          this.key.xdata.push(res.data.data.time)
           // 5个点
           if (this.key.data.length >= 6) {
-            this.key.data.shift();
-            this.key.xdata.shift();
+            this.key.data.shift()
+            this.key.xdata.shift()
           }
           // 更新点信息
           this.$refs.keySize.updateSeries([
             {
-              name: "key数量",
+              name: 'key数量',
               data: this.key.data
             }
-          ]);
+          ])
           // 更新最大最小值
           this.$refs.keySize.updateOptions(
             {
@@ -228,29 +228,29 @@ export default {
             },
             true,
             true
-          );
-        });
-      }, 5000);
+          )
+        })
+      }, 5000)
     },
-    getInfo() {
+    getInfo () {
       apiRedisInfo().then(res => {
-        let data = [];
+        let data = []
         res.data.data.forEach(e => {
           if (e.description) {
-            data.push(e);
+            data.push(e)
           }
-        });
-        this.redisInfo = data;
-      });
+        })
+        this.redisInfo = data
+      })
     }
   },
-  beforeDestroy() {
+  beforeDestroy () {
     if (this.timer) {
-      clearInterval(this.timer);
+      clearInterval(this.timer)
     }
   },
-  mounted() {
-    this.init();
+  mounted () {
+    this.init()
   }
-};
+}
 </script>

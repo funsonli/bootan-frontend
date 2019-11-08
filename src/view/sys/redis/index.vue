@@ -202,21 +202,17 @@
 import {
   apiRedisIndex,
   apiRedisSave,
-  apiRedisDelete,
-  apiRedisAll,
-  apiRedisImportData,
-  apiRedisEnable,
-  apiRedisDisable
+  apiRedisDelete
 } from '@/api/index'
 import excel from '@/libs/excel'
 import { importDataColumns, importData } from './import-excel.js'
-//import expandRow from '@/view/sys/redis/expand.vue'
-import monitor from "@/view/sys/redis/monitor.vue"
+// import expandRow from '@/view/sys/redis/expand.vue'
+import monitor from '@/view/sys/redis/monitor.vue'
 
 export default {
   name: 'model-manage',
   components: {
-    //expandRow
+    // expandRow
     monitor
   },
   data () {
@@ -230,7 +226,7 @@ export default {
       dropDownContent: '展开',
       dropDownIcon: 'ios-arrow-down',
       searchForm: {
-        key: '',
+        key: ''
       },
       columns: [
         { type: 'selection', width: 60, align: 'center', fixed: 'left' },
@@ -657,9 +653,9 @@ export default {
     handleSelectNone () {
       this.$refs.table.selectAll(false)
     },
-    handleClickTab(name) {
-      if (name == "monitor") {
-        this.$Message.info("每隔5秒刷新一次数据，请耐心等待图表绘制");
+    handleClickTab (name) {
+      if (name === 'monitor') {
+        this.$Message.info('每隔5秒刷新一次数据，请耐心等待图表绘制')
       }
     },
     changeType () {

@@ -1,7 +1,7 @@
 import {
   getBreadCrumbList,
   setTagNavListInLocalstorage,
-  getMenuByRouter,
+  // getMenuByRouter,
   getTagNavListFromLocalstorage,
   getHomeRoute,
   getNextRoute,
@@ -145,7 +145,7 @@ export default {
     },
     removeTag (state, name) {
       state.pageOpenedList.map((item, index) => {
-        if (item.name == name) {
+        if (item.name === name) {
           state.pageOpenedList.splice(index, 1)
         }
       })
@@ -170,25 +170,25 @@ export default {
       let currentName = vm.$route.name
       let currentIndex = 0
       state.pageOpenedList.forEach((item, index) => {
-        if (item.name == currentName) {
+        if (item.name === currentName) {
           currentIndex = index
         }
       })
-      if (currentIndex == 0) {
+      if (currentIndex === 0) {
         state.pageOpenedList.splice(1)
       } else {
         state.pageOpenedList.splice(currentIndex + 1)
         state.pageOpenedList.splice(1, currentIndex - 1)
       }
       let newCachepage = state.cachePage.filter(item => {
-        return item == currentName
+        return item === currentName
       })
       state.cachePage = newCachepage
       localStorage.pageOpenedList = JSON.stringify(state.pageOpenedList)
     },
     closePage (state, name) {
       state.cachePage.forEach((item, index) => {
-        if (item == name) {
+        if (item === name) {
           state.cachePage.splice(index, 1)
         }
       })
@@ -207,7 +207,7 @@ export default {
     addOpenSubmenu (state, name) {
       let hasThisName = false
       let isEmpty = false
-      if (name.length == 0) {
+      if (name.length === 0) {
         isEmpty = true
       }
       if (state.openedSubmenuArr.indexOf(name) > -1) {

@@ -45,7 +45,7 @@
 
 <script>
 import { uploadFile } from '@/api/index'
-import { setToken, getToken } from '@/libs/util'
+import { getToken } from '@/libs/util'
 export default {
   name: 'uploadPicInput',
   props: {

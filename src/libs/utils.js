@@ -1,9 +1,9 @@
 import axios from 'axios'
-import { setToken, getToken } from '@/libs/util'
+import { getToken } from '@/libs/util'
 import { getMenuList } from '@/api/index'
 import lazyLoading from './lazyLoading.js'
-import router from '@/router/index'
-import Cookies from 'js-cookie'
+// import router from '@/router/index'
+// import Cookies from 'js-cookie'
 
 let util = {
 
@@ -67,7 +67,7 @@ util.getRouterObjByName = function (routers, name) {
   // debugger;
   let routerObj = null
   for (let item of routers) {
-    if (item.name == name) {
+    if (item.name === name) {
       return item
     }
     routerObj = util.getRouterObjByName(item.children, name)
@@ -90,18 +90,18 @@ util.setCurrentPath = function (vm, name) {
   let title = ''
   let isOtherRouter = false
   vm.$store.state.app.routers.forEach(item => {
-    if (item.children.length == 1) {
-      if (item.children[0].name == name) {
+    if (item.children.length === 1) {
+      if (item.children[0].name === name) {
         title = util.handleTitle(vm, item)
-        if (item.name == 'otherRouter') {
+        if (item.name === 'otherRouter') {
           isOtherRouter = true
         }
       }
     } else {
       item.children.forEach(child => {
-        if (child.name == name) {
+        if (child.name === name) {
           title = util.handleTitle(vm, child)
-          if (item.name == 'otherRouter') {
+          if (item.name === 'otherRouter') {
             isOtherRouter = true
           }
         }
@@ -109,7 +109,7 @@ util.setCurrentPath = function (vm, name) {
     }
   })
   let currentPathArr = []
-  if (name == 'home_index') {
+  if (name === 'home_index') {
     currentPathArr = [
       {
         // title: util.handleTitle(vm, util.getRouterObjByName(vm.$store.state.app.routers, 'home_index')),
@@ -135,13 +135,13 @@ util.setCurrentPath = function (vm, name) {
   } else {
     let currentPathObj = vm.$store.state.app.routers.filter(item => {
       if (item.children.length <= 1) {
-        return item.children[0].name == name
+        return item.children[0].name === name
       } else {
         let i = 0
         let childArr = item.children
         let len = childArr.length
         while (i < len) {
-          if (childArr[i].name == name) {
+          if (childArr[i].name === name) {
             return true
           }
           i++
@@ -149,7 +149,7 @@ util.setCurrentPath = function (vm, name) {
         return false
       }
     })[0]
-    if (currentPathObj.children.length <= 1 && currentPathObj.name == 'home') {
+    if (currentPathObj.children.length <= 1 && currentPathObj.name === 'home') {
       currentPathArr = [
         {
           title: '首页',
@@ -172,7 +172,7 @@ util.setCurrentPath = function (vm, name) {
       ]
     } else {
       let childObj = currentPathObj.children.filter((child) => {
-        return child.name == name
+        return child.name === name
       })[0]
       currentPathArr = [
         {
@@ -207,7 +207,7 @@ util.openNewPage = function (vm, name, argu, query) {
   let i = 0
   let tagHasOpened = false
   while (i < openedPageLen) {
-    if (name == pageOpenedList[i].name) { // 页面已经打开
+    if (name === pageOpenedList[i].name) { // 页面已经打开
       vm.$store.commit('pageOpenedList', {
         index: i,
         argu: argu,
@@ -221,9 +221,9 @@ util.openNewPage = function (vm, name, argu, query) {
   if (!tagHasOpened) {
     let tag = vm.$store.state.app.tagsList.filter((item) => {
       if (item.children) {
-        return name == item.children[0].name
+        return name === item.children[0].name
       } else {
-        return name == item.name
+        return name === item.name
       }
     })
     tag = tag[0]
@@ -246,7 +246,7 @@ util.toDefaultPage = function (routers, name, route, next) {
   let i = 0
   let notHandle = true
   while (i < len) {
-    if (routers[i].name == name && routers[i].children && routers[i].redirect == undefined) {
+    if (routers[i].name === name && routers[i].children && routers[i].redirect === undefined) {
       route.replace({
         name: routers[i].children[0].name
       })
@@ -281,7 +281,7 @@ export const getArrayFromFile = (file) => {
       }).map(item => {
         return item[0].split(',')
       })
-      if (format == 'csv') resolve(arr)
+      if (format === 'csv') resolve(arr)
       else reject(new Error('[Format Error]:不是Csv文件'))
     }
   })
@@ -371,7 +371,7 @@ util.initRouter = function (vm) {
 util.initAllMenuData = function (constRoutes, data) {
   let allMenuData = []
   data.forEach(e => {
-    if (e.type == 1) {
+    if (e.type === 1) {
       e.children.forEach(item => {
         allMenuData.push(item)
       })
@@ -403,7 +403,7 @@ util.initMenuData = function (vm, data) {
   if (currNav) {
     // 读取缓存title
     for (var item of navList) {
-      if (item.name == currNav) {
+      if (item.name === currNav) {
         vm.$store.commit('setCurrNavTitle', item.title)
         break
       }
@@ -414,10 +414,10 @@ util.initMenuData = function (vm, data) {
     vm.$store.commit('setCurrNavTitle', navList[0].title)
   }
   vm.$store.commit('setCurrNav', currNav)
-  for (var item of menuData) {
-    if (item.name == currNav) {
+  for (var item1 of menuData) {
+    if (item1.name === currNav) {
       // 过滤
-      menuData = item.children
+      menuData = item1.children
       break
     }
   }
