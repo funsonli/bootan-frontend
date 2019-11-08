@@ -1,8 +1,3 @@
-<p align="center">
-    <a href="https://www.iviewui.com">
-        <img width="200" src="https://file.iviewui.com/logo-new.svg">
-    </a>
-</p>
 
 <h1>
 iView Admin
@@ -25,66 +20,6 @@ iView Admin is a front-end management background integration solution. It based 
 
 ![image](https://file.iviewui.com/admin-dist/admin-preview.png)
 
-## Features
+## 帮助
 
-- Login / Logout
-- Permission Authentication
-    - A list of filters
-    - Permission to switch
-- i18n
-- Components
-    - Rich Text Editor
-    - Markdown Editor
-    - City Cascader
-    - Photos preview and edit
-    - Draggable list
-    - File upload
-    - Digital gradient
-    - split-pane
-- Form
-    - The article published
-    - Workflow
-- Table
-    - Drag-and-drop sort
-    - Searchable form
-    - Table export data
-        - Export to Csv file
-        - Export to Xls file
-    - Table to picture
-- Error Page
-    - 403
-    - 404
-    - 500
-- Router
-    - Dynamic routing
-    - With reference page
-- Theme
-- Shrink the sidebar
-- Tag navigation
-- Breadcrumb navigation
-- Full screen / exit full screen
-- Lock screen
-- The message center
-- Personal center
-
-## Getting started
-```bush
-# clone the project
-git clone https://github.com/iview/iview-admin.git
-
-// install dependencies
-npm install
-
-// develop
-npm run dev
-```
-
-## Build
-```bush
-npm run build
-```
-
-## License
-[MIT](http://opensource.org/licenses/MIT)
-
-Copyright (c) 2016-present, TalkingData
+npm run lint --fix  格式化代码

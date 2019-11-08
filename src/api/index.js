@@ -288,3 +288,35 @@ export const apiFileDelete = (ids, params) => {
 export const apiFileCopy = (params) => {
   return axios.deleteRequest('/file/copy/' + params)
 }
+
+export const apiQuartzIndex = (params) => {
+  return axios.getRequest('/quartz/index', params)
+}
+
+export const apiQuartzAll = (params) => {
+  return axios.getRequest('/quartz/all', params)
+}
+
+export const apiQuartzView = (id, params) => {
+  return axios.getRequest('/quartz/view/' + id, params)
+}
+
+export const apiQuartzSave = (params) => {
+  return axios.postRequest('/quartz/save', params)
+}
+
+export const apiQuartzDelete = (ids, params) => {
+  return axios.deleteRequest('/quartz/delete/' + ids, params)
+}
+
+export const apiQuartzImportData = (params) => {
+  return axios.importRequest('/quartz/import-data', params)
+}
+
+export const apiQuartzEnable = (id, params) => {
+  return axios.postRequest('/quartz/enable/' + id, params)
+}
+
+export const apiQuartzDisable = (id, params) => {
+  return axios.postRequest('/quartz/disable/' + id, params)
+}
