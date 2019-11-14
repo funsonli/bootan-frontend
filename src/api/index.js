@@ -109,6 +109,14 @@ export const apiPermissionSave = (params) => {
   return axios.postRequest('/permission/save', params)
 }
 
+export const apiPermissionCreate = (params) => {
+  return axios.postRequest('/permission/create', params)
+}
+
+export const apiPermissionUpdate = (params) => {
+  return axios.postRequest('/permission/update', params)
+}
+
 export const apiPermissionDelete = (ids, params) => {
   return axios.deleteRequest('/permission/delete/' + ids, params)
 }
