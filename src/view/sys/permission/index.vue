@@ -4,6 +4,7 @@
       <Button @click="addModal" type="primary" icon="md-add">添加子节点</Button>
       <Button @click="addModalRoot" icon="md-add">添加顶部菜单</Button>
       <Button @click="deleteBatch" icon="md-trash">批量删除</Button>
+      <Button @click="changeOperationDropdown('expandAll')" icon="md-list">展开所有</Button>
       <Dropdown @on-click="changeOperationDropdown">
         <Button>
           更多操作
@@ -17,7 +18,7 @@
           <DropdownItem name="expandAll">展开所有</DropdownItem>
         </DropdownMenu>
       </Dropdown>
-      <i-switch v-model="strict" size="large" style="margin-left:5px">
+      <i-switch v-model="strictly" size="large" style="margin-left:5px">
         <span slot="open">级联</span>
         <span slot="close">单选</span>
       </i-switch>
@@ -25,15 +26,14 @@
     <Row type="flex" justify="start" class="code-row-bg">
       <Col span="6">
         <Alert show-icon>
-          当前选择编辑：
-          <span class="select-title">{{selectTitle}}</span>
-          <a class="select-clear" v-if="modelForm.id" @click="handleSelectNone">取消选择</a>
+          当前选择编辑：<span> {{selectTitle}} </span>
+          <a class="select-clear" v-if="modelForm.id" @click="handleSelectNone"> 取消选择</a>
         </Alert>
         <Input
           v-model="searchKey"
           suffix="ios-search"
           @on-change="handleSearch"
-          placeholder="输入菜单名搜索"
+          placeholder="输入名称搜索"
           clearable
         />
         <div class="tree-bar" :style="{maxHeight: maxHeight}">
@@ -43,7 +43,7 @@
             show-checkbox
             :render="renderContent"
             @on-check-change="changeCheck"
-            :check-strictly="!strict"
+            :check-strictly="!strictly"
           ></Tree>
         </div>
         <Spin size="large" fix v-if="loading"></Spin>
@@ -159,7 +159,7 @@
       </Col>
     </Row>
 
-    <Modal draggable :title="modalTitle" v-model="modalVisible" :mask-closable="false" :width="500" :styles="{top: '30px'}" >
+    <Modal draggable :title="modalTitle" v-model="modelModalVisible" :mask-closable="false" :width="500" :styles="{top: '30px'}" >
       <Form ref="modelFormAdd" :model="modelFormAdd" :label-width="100" :rules="modelFormValidate">
         <div v-if="showParent">
           <FormItem label="上级节点：">{{parentTitle}}</FormItem>
@@ -280,8 +280,15 @@ export default {
   },
   data () {
     return {
-      strict: true,
+      loading: true,
+      loadingSubmit: false,
+      strictly: true,
       selectTitle: '',
+      searchKey: '',
+      modalTitle: '',
+      modelModalVisible: false,
+      maxHeight: '520px',
+      showParent: false,
       expandLevel: 1,
       modelForm: {
         id: '',
@@ -309,19 +316,14 @@ export default {
         component: [
           { required: true, message: '前端组件不能为空', trigger: 'blur' }
         ],
-        sortOrder: [{ required: true, trigger: 'blur', type: 'number' }]
+        sortOrder: [{ required: true, message: '排序值不能为空', trigger: 'blur', type: 'number' }]
       },
-      searchKey: '',
-      maxHeight: '500px',
+      selectCount: 0,
+      selectList: [],
       data: [],
-      loading: true,
-      loadingSubmit: false,
-      modalTitle: '',
-      modalVisible: false,
       modelFormAdd: {
         buttonType: ''
       },
-      showParent: false,
       PermissionTypeList: []
     }
   },
@@ -470,7 +472,7 @@ export default {
               // this.$store.commit('setAdded', false)
               // util.initRouter(this)
               this.init()
-              this.modalVisible = false
+              this.modelModalVisible = false
             }
           })
         }
@@ -490,7 +492,7 @@ export default {
           if (this.modelForm.buttonType == null) {
             this.modelForm.buttonType = ''
           }
-          if (this.modelFormAdd.level === 3) {
+          if (this.modelForm.level === 3) {
             this.modelForm.name = ''
             this.modelForm.icon = ''
             this.modelForm.component = ''
@@ -503,7 +505,7 @@ export default {
               // this.$store.commit('setAdded', false)
               // util.initRouter(this)
               this.init()
-              this.modalVisible = false
+              this.modelModalVisible = false
             }
           })
         }
@@ -570,7 +572,7 @@ export default {
         return
       }
       this.parentTitle = this.modelForm.title
-      this.modalTitle = '添加子节点(可拖动)'
+      this.modalTitle = '添加子节点'
       this.showParent = true
       let type = 0
       if (this.modelForm.level === 1) {
@@ -600,18 +602,19 @@ export default {
         this.modelFormAdd.path = '/'
         this.modelFormAdd.component = 'Main'
       }
-      this.modalVisible = true
+      this.modelModalVisible = true
     },
     addModalRoot () {
-      this.modalTitle = '添加顶部菜单(可拖动)'
+      this.modalTitle = '添加顶部菜单'
       this.showParent = false
       this.modelFormAdd = {
+        parentId: '0',
         type: 1,
         level: 0,
         sortOrder: 50,
         status: 1
       }
-      this.modalVisible = true
+      this.modelModalVisible = true
     },
     changeOperationDropdown (name) {
       if (name === 'expandOne') {
@@ -633,7 +636,7 @@ export default {
     },
     /* **** 页面内按钮交互代码 end **** */
 
-    /* **** 页面内控件标准代码（一般无限续修改） begin **** */
+    /* **** 页面内控件标准代码（一般无须修改） begin **** */
     changeSelect (v) {
       if (v && v.id !== this.modelForm.id) {
         // 转换null为''
@@ -643,9 +646,9 @@ export default {
           }
         }
         let str = JSON.stringify(v)
-        let menu = JSON.parse(str)
-        this.modelForm = menu
-        this.selectTitle = menu.title
+        let item = JSON.parse(str)
+        this.modelForm = item
+        this.selectTitle = item.title
       } else {
         this.handleSelectNone()
       }
@@ -672,7 +675,7 @@ export default {
       this.modelForm.type = type
     },
     cancelModal () {
-      this.modalVisible = false
+      this.modelModalVisible = false
     }
     /* **** 页面内控件标准代码（一般无限续修改） end **** */
   }
