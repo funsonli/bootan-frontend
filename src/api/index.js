@@ -137,6 +137,14 @@ export const apiDepartmentSave = (params) => {
   return axios.postRequest('/department/save', params)
 }
 
+export const apiDepartmentCreate = (params) => {
+  return axios.postRequest('/department/create', params)
+}
+
+export const apiDepartmentUpdate = (params) => {
+  return axios.postRequest('/department/update', params)
+}
+
 export const apiDepartmentDelete = (ids, params) => {
   return axios.deleteRequest('/department/delete/' + ids, params)
 }
