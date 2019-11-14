@@ -268,7 +268,8 @@
 import {
   apiPermissionAll,
   apiDictDataViewName,
-  apiPermissionSave,
+  apiPermissionCreate,
+  apiPermissionUpdate,
   apiPermissionDelete,
   apiPermissionSearch
 } from '@/api/index'
@@ -464,7 +465,7 @@ export default {
             this.modelFormAdd.icon = ''
             this.modelFormAdd.component = ''
           }
-          apiPermissionSave(this.modelFormAdd).then(res => {
+          apiPermissionCreate(this.modelFormAdd).then(res => {
             this.loadingSubmit = false
             if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
               this.$Message.success('添加成功')
@@ -497,7 +498,7 @@ export default {
             this.modelForm.icon = ''
             this.modelForm.component = ''
           }
-          apiPermissionSave(this.modelForm).then(res => {
+          apiPermissionUpdate(this.modelForm).then(res => {
             this.loadingSubmit = false
             if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
               this.$Message.success('编辑成功')
