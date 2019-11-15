@@ -189,7 +189,6 @@ export default {
         {
           title: '角色名称',
           key: 'name',
-          width: 150,
           sortable: true,
           render: (h, params) => {
             if (this.editRow === params.index && this.editColumn === 'name') {
