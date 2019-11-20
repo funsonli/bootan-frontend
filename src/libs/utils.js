@@ -371,7 +371,7 @@ util.initRouter = function (vm) {
 util.initAllMenuData = function (constRoutes, data) {
   let allMenuData = []
   data.forEach(e => {
-    if (e.type === 1) {
+    if (e.level === 0) {
       e.children.forEach(item => {
         allMenuData.push(item)
       })
