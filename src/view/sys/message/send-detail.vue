@@ -17,14 +17,14 @@
           </Select>
         </Form-item>
         <Form-item style="margin-left:-35px;" class="br">
-          <Button @click="getModel" type="primary" icon="ios-search">搜索</Button>
+          <Button @click="getModels" type="primary" icon="ios-search">搜索</Button>
           <Button @click="handleReset">重置</Button>
         </Form-item>
       </Form>
     </Row>
     <Row class="table-operation-con">
       <Button @hasRole="'ROLE_ADMIN'" @click="delAll" icon="md-trash">批量删除</Button>
-      <Button @click="getModel" icon="md-refresh">刷新</Button>
+      <Button @click="init" icon="md-refresh">刷新</Button>
     </Row>
     <Row>
       <Alert show-icon>
@@ -208,11 +208,11 @@ export default {
   methods: {
     init () {
       this.messageId = this.$route.query.id
-      this.getModel()
+      this.getModels()
     },
 
     /* **** 和后台交互代码区块 begin **** */
-    getModel (v) {
+    getModels (v) {
       this.loading = true
       if (v === 0) {
         this.userId = ''
@@ -253,7 +253,7 @@ export default {
             this.$Modal.remove()
             if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
               this.$Message.success(res.data.message)
-              this.getModel()
+              this.getModels()
             } else {
               this.$Message.error(res.data.message)
             }
@@ -282,7 +282,7 @@ export default {
             if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
               this.$Message.success(res.data.message)
               this.handleSelectNone()
-              this.getModel()
+              this.getModels()
             } else {
               this.$Message.error(res.data.message)
             }
@@ -300,16 +300,16 @@ export default {
     handleReset () {
       this.userId = ''
       this.status = ''
-      this.getModel()
+      this.getModels()
     },
     changePage (v) {
       this.pageNumber = v
-      this.getModel()
+      this.getModels()
       this.handleSelectNone()
     },
     changePageSize (v) {
       this.pageSize = v
-      this.getModel()
+      this.getModels()
     },
     changeSort (e) {
       this.sortColumn = e.key
@@ -317,7 +317,7 @@ export default {
       if (e.order === 'normal') {
         this.sortType = ''
       }
-      this.getModel()
+      this.getModels()
     },
     handleSelectNone () {
       this.$refs.table.selectAll(false)
@@ -333,7 +333,7 @@ export default {
     $route (to, from) {
       if (to.name === 'message-send-detail_page') {
         this.messageId = this.$route.query.id
-        this.getModel()
+        this.getModels()
       }
     }
   }

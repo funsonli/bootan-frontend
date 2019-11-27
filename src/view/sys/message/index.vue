@@ -60,7 +60,7 @@
     <Row class="table-operation-con">
       <Button @click="addModal" type="primary" icon="md-add">发送新消息</Button>
       <Button @click="deleteBatch" icon="md-trash">批量删除撤回</Button>
-      <Button @click="getModel" icon="md-refresh">刷新</Button>
+      <Button @click="init" icon="md-refresh">刷新</Button>
     </Row>
     <Row>
       <Alert show-icon>
@@ -171,7 +171,7 @@ export default {
           filterRemote (value, row) {
             that.searchForm.type = value[0]
             that.searchForm.type = that.searchForm.type + ''
-            that.getModel()
+            that.getModels()
           }
         },
         {
@@ -313,11 +313,11 @@ export default {
   },
   methods: {
     init () {
-      this.getModel()
+      this.getModels()
     },
 
     /* **** 和后台交互代码区块 begin **** */
-    getModel () {
+    getModels () {
       this.loading = true
       // 避免后台默认值
       if (typeof this.searchForm.type === 'undefined' || this.searchForm.type === 'undefined') {
@@ -354,7 +354,7 @@ export default {
             if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
               this.$Message.success(res.data.message)
               this.handleSelectNone()
-              this.getModel()
+              this.getModels()
             } else {
               this.$Message.error(res.data.message)
             }
@@ -374,7 +374,7 @@ export default {
             this.$Modal.remove()
             if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
               this.$Message.success(res.data.message)
-              this.getModel()
+              this.getModels()
             } else {
               this.$Message.error(res.data.message)
             }
@@ -412,7 +412,7 @@ export default {
     handleSearch () {
       this.searchForm.pageNumber = 1
       this.searchForm.pageSize = 10
-      this.getModel()
+      this.getModels()
     },
     handleReset () {
       this.$refs.searchForm.resetFields()
@@ -422,7 +422,7 @@ export default {
       this.searchForm.startDate = ''
       this.searchForm.endDate = ''
       // 重新加载数据
-      this.getModel()
+      this.getModels()
     },
     changeSearchDropDown () {
       if (this.drop) {
@@ -453,16 +453,16 @@ export default {
       if (e.order === 'normal') {
         this.searchForm.order = ''
       }
-      this.getModel()
+      this.getModels()
     },
     changePage (v) {
       this.searchForm.pageNumber = v
-      this.getModel()
+      this.getModels()
       this.handleSelectNone()
     },
     changePageSize (v) {
       this.searchForm.pageSize = v
-      this.getModel()
+      this.getModels()
     }
     /* **** 页面内控件标准代码（一般无限续修改） end **** */
   }
