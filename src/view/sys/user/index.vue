@@ -86,7 +86,7 @@
                 <DropdownItem name="reset">重置用户密码</DropdownItem>
                 <DropdownItem name="exportData">导出所选数据</DropdownItem>
                 <DropdownItem name="exportAll">导出全部数据</DropdownItem>
-                <DropdownItem name="importData">导入数据(付费)</DropdownItem>
+                <DropdownItem name="importData">导入数据</DropdownItem>
               </DropdownMenu>
             </Dropdown>
             <circleLoading v-if="operationLoading" />
@@ -269,10 +269,12 @@ import {
   apiRoleIndex,
   apiUserIndex,
   apiUserDelete,
-  apiUserSave,
+  apiUserCreate,
+  apiUserUpdate,
   apiUserResetPassword,
-  apiUserDisable,
   apiUserEnable,
+  apiUserDisable,
+  apiUserExportData,
   apiUserImportData
 } from '@/api/index'
 import { exportColumn } from '@/view/sys/user/exportColumn'
@@ -815,6 +817,8 @@ export default {
         if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
           this.data = res.data.data.content
           this.total = res.data.data.totalElements
+        } else {
+          this.$Message.error(res.data.message)
         }
       })
     },
@@ -832,10 +836,7 @@ export default {
             // 添加用户 避免编辑后传入id
             delete this.modelForm.id
             delete this.modelForm.status
-            if (
-              this.modelForm.password === '' ||
-              this.modelForm.password === undefined
-            ) {
+            if (this.modelForm.password === '' || this.modelForm.password === undefined) {
               this.errorPass = '密码不能为空'
               return
             }
@@ -843,23 +844,37 @@ export default {
               this.errorPass = '密码长度不得少于6位'
               return
             }
+            this.loadingSubmit = true
+            apiUserCreate(this.modelForm).then(res => {
+              this.loadingSubmit = false
+              if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
+                this.$Message.success(res.data.message)
+                this.getModels()
+                this.modelModalVisible = false
+              } else {
+                this.$Message.error(res.data.message)
+              }
+            })
+          } else {
+              this.loadingSubmit = true
+              apiUserUpdate(this.modelForm).then(res => {
+              this.loadingSubmit = false
+              if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
+                this.$Message.success(res.data.message)
+                this.getModels()
+                this.modelModalVisible = false
+              } else {
+                this.$Message.error(res.data.message)
+              }
+            })
           }
-          this.loadingSubmit = true
-          apiUserSave(this.modelForm).then(res => {
-            this.loadingSubmit = false
-            if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
-              this.$Message.success('操作成功')
-              this.getModels()
-              this.modelModalVisible = false
-            }
-          })
         }
       })
     },
     saveField (row) {
       this.editRow = -1
       this.editColumn = ''
-      apiUserSave(row).then(res => {
+      apiUserUpdate(row).then(res => {
         this.isSaving = false
         if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
           this.$Message.success(res.data.message)
@@ -901,8 +916,10 @@ export default {
           apiUserDelete(v.id).then(res => {
             this.$Modal.remove()
             if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
-              this.$Message.success('删除成功')
+              this.$Message.success(res.data.message)
               this.getModels()
+            } else {
+              this.$Message.error(res.data.message)
             }
           })
         }
@@ -926,9 +943,11 @@ export default {
           apiUserDelete(ids).then(res => {
             this.$Modal.remove()
             if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
-              this.$Message.success('删除成功')
+              this.$Message.success(res.data.message)
               this.handleSelectNone()
               this.getModels()
+            } else {
+              this.$Message.error(res.data.message)
             }
           })
         }
@@ -950,11 +969,11 @@ export default {
         }
         this.exportType = 'part'
         this.exportModalVisible = true
-        this.exportTitle = '确认导出 ' + this.selectCount + ' 条数据(付费)'
+        this.exportTitle = '确认导出 ' + this.selectCount + ' 条数据'
       } else if (name === 'exportAll') {
         this.exportType = 'all'
         this.exportModalVisible = true
-        this.exportTitle = '确认导出全部 ' + this.total + ' 条数据(付费)'
+        this.exportTitle = '确认导出全部 ' + this.total + ' 条数据'
         this.searchForm.pageNumber = 1
         apiUserIndex(this.searchForm).then(res => {
           if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
@@ -993,9 +1012,11 @@ export default {
           apiUserResetPassword({ ids: ids }).then(res => {
             this.$Modal.remove()
             if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
-              this.$Message.success('操作成功')
+              this.$Message.success(res.data.message)
               this.handleSelectNone()
               this.getModels()
+            } else {
+              this.$Message.error(res.data.message)
             }
           })
         }

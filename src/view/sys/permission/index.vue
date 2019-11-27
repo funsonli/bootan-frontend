@@ -33,7 +33,7 @@
           v-model="searchKey"
           suffix="ios-search"
           @on-change="handleSearch"
-          placeholder="输入名称搜索"
+          placeholder="输入标题搜索"
           clearable
         />
         <div class="tree-bar" :style="{maxHeight: maxHeight}">
@@ -51,36 +51,42 @@
       <Col span="9">
         <Form ref="modelForm" :model="modelForm" :label-width="100" :rules="modelFormValidate">
           <FormItem label="类型" prop="level">
-            <div v-show="modelForm.level==0">
+            <div v-show="modelForm.level == 0">
               <Icon type="ios-navigate-outline" size="16" class="icon-item"></Icon>
               <span>顶部菜单</span>
             </div>
-            <div v-show="modelForm.level==1||modelForm.level==2">
-              <Icon type="ios-list-box-outline" size="16" class="icon-item"></Icon>
-              <span>页面菜单</span>
+            <div v-show="modelForm.level == 1">
+              <Icon type="ios-menu" size="16" class="icon-item"></Icon>
+              <span>左侧分类菜单</span>
             </div>
-            <div v-show="modelForm.level==3">
+            <div v-show="modelForm.level == 2">
+              <Icon type="ios-list-box-outline" size="16" class="icon-item"></Icon>
+              <span>左侧页面菜单</span>
+            </div>
+            <div v-show="modelForm.level == 3">
               <Icon type="md-radio-button-on" size="16" class="icon-item"></Icon>
               <span>操作按钮</span>
             </div>
           </FormItem>
-          <FormItem label="名称" prop="title" v-if="modelForm.level==0||modelForm.level==1||modelForm.level==2">
+          <FormItem label="标题" prop="title" v-if="modelForm.level==0||modelForm.level==1||modelForm.level==2">
             <Input v-model="modelForm.title"/>
           </FormItem>
-          <FormItem label="名称" prop="title" v-if="modelForm.level==3">
-            <Tooltip placement="right" content="操作按钮名称不得重复">
+          <FormItem label="标题" prop="title" v-if="modelForm.level==3">
+            <Tooltip placement="right" content="操作按钮标题不得重复 如用户列表">
               <Input v-model="modelForm.title" class="permission-form-input"/>
             </Tooltip>
           </FormItem>
           <FormItem label="路径" prop="path" v-if="modelForm.level==1||modelForm.level==2">
-            <Input v-model="modelForm.path"/>
+            <Tooltip placement="right" content="显示在浏览器上，如/sys/user/index">
+              <Input v-model="modelForm.path"/>
+            </Tooltip>
           </FormItem>
           <FormItem label="请求路径" prop="path" v-if="modelForm.level==3">
             <Tooltip
               placement="right"
               :max-width="230"
               transfer
-              content="填写后台请求URL，后台将作权限拦截，若无可填写'无'或其他"
+              content="填写后台请求URL，后台将作权限拦截，如/bootan/user/create* "
             >
               <Input v-model="modelForm.path" class="permission-form-input"/>
             </Tooltip>
@@ -94,13 +100,18 @@
               >{{item.name}}</Option>
             </Select>
           </FormItem>
-          <FormItem label="英文名" prop="name" v-if="modelForm.level==0">
+          <FormItem label="名称" prop="name" v-if="modelForm.level==0">
             <Tooltip placement="right" content="需唯一">
               <Input v-model="modelForm.name" class="permission-form-input" />
             </Tooltip>
           </FormItem>
-          <FormItem label="路由英文名" prop="name" v-if="modelForm.level==1||modelForm.level==2">
-            <Tooltip placement="right" content="需唯一">
+          <FormItem label="名称" prop="name" v-if="modelForm.level==1||modelForm.level==2">
+            <Tooltip placement="right" content="需唯一，建议和路径一致，如/sys/user/index">
+              <Input v-model="modelForm.name" class="permission-form-input"/>
+            </Tooltip>
+          </FormItem>
+          <FormItem label="权限名称" prop="name" v-if="modelForm.level==3">
+            <Tooltip placement="right" content="需唯一，如/bootan/user/create">
               <Input v-model="modelForm.name" class="permission-form-input"/>
             </Tooltip>
           </FormItem>
@@ -178,23 +189,25 @@
             <span>操作按钮</span>
           </div>
         </FormItem>
-        <FormItem label="名称" prop="title" v-if="modelFormAdd.level==0||modelFormAdd.level==1||modelFormAdd.level==2">
+        <FormItem label="标题" prop="title" v-if="modelFormAdd.level==0||modelFormAdd.level==1||modelFormAdd.level==2">
           <Input v-model="modelFormAdd.title"/>
         </FormItem>
-        <FormItem label="名称" prop="title" v-if="modelFormAdd.level==3">
-          <Tooltip placement="right" content="操作按钮名称不得重复">
+        <FormItem label="标题" prop="title" v-if="modelFormAdd.level==3">
+          <Tooltip placement="right" content="操作按钮标题不得重复">
             <Input v-model="modelFormAdd.title" style="width:368px"/>
           </Tooltip>
         </FormItem>
-        <FormItem label="路径" prop="path" v-if="modelFormAdd.level==1||modelFormAdd.level==2">
-          <Input v-model="modelFormAdd.path"/>
+        <FormItem label="路径" prop="path" v-if="modelFormAdd.level == 1 || modelFormAdd.level == 2">
+          <Tooltip placement="right" content="显示在浏览器上，如/sys/user/index">
+            <Input v-model="modelFormAdd.path"/>
+          </Tooltip>
         </FormItem>
-        <FormItem label="请求路径" prop="path" v-if="modelFormAdd.level==3">
+        <FormItem label="请求路径" prop="path" v-if="modelFormAdd.level == 3">
           <Tooltip
             placement="right"
             :max-width="230"
             transfer
-            content="填写后台请求URL，后台将作权限拦截，若无可填写'无'或其他"
+            content="填写后台请求URL，后台将作权限拦截，如/bootan/user/create* "
           >
             <Input v-model="modelFormAdd.path" style="width:368px"/>
           </Tooltip>
@@ -210,8 +223,13 @@
           </Tooltip>
         </FormItem>
         <FormItem label="路由英文名" prop="name" v-if="modelFormAdd.level==1||modelFormAdd.level==2">
-          <Tooltip placement="right" content="需唯一">
+          <Tooltip placement="right" content="需唯一，建议和路径一致，如/sys/user/index">
             <Input v-model="modelFormAdd.name" style="width:368px"/>
+          </Tooltip>
+        </FormItem>
+        <FormItem label="权限名称" prop="name" v-if="modelForm.level==3">
+          <Tooltip placement="right" content="需唯一，如/bootan/user/create">
+            <Input v-model="modelForm.name" class="permission-form-input"/>
           </Tooltip>
         </FormItem>
         <FormItem label="图标" prop="icon" v-if="modelFormAdd.level==0||modelFormAdd.level==1||modelFormAdd.level==2">
@@ -221,7 +239,7 @@
           <Input v-model="modelFormAdd.component"/>
         </FormItem>
         <FormItem label="第三方网页链接" prop="redirectUrl" v-if="modelFormAdd.level==1||modelFormAdd.level==2">
-          <Tooltip placement="right" content="前端组件需为 /sys/monitor/monitor 时生效">
+          <Tooltip placement="right" content="前端组件需为 /sys/monitor/index 时生效">
             <Input v-model="modelFormAdd.redirectUrl" placeholder="http://" style="width:368px"/>
           </Tooltip>
         </FormItem>
@@ -308,7 +326,7 @@ export default {
         showAlways: true
       },
       modelFormValidate: {
-        title: [{ required: true, message: '名称不能为空', trigger: 'blur' }],
+        title: [{ required: true, message: '标题不能为空', trigger: 'blur' }],
         name: [
           { required: true, message: '路由英文名不能为空', trigger: 'blur' }
         ],
@@ -575,20 +593,7 @@ export default {
       this.parentTitle = this.modelForm.title
       this.modalTitle = '添加子节点'
       this.showParent = true
-      let type = 0
-      if (this.modelForm.level === 1) {
-        type = 0
-      } else if (this.modelForm.level === 2) {
-        type = 1
-      } else if (this.modelForm.level === 3) {
-        this.$Modal.warning({
-          title: '抱歉，不能添加啦',
-          content: '仅支持2级菜单目录'
-        })
-        return
-      } else {
-        type = 0
-      }
+      let type = this.modelForm.level
       this.modelFormAdd = {
         icon: '',
         type: type,

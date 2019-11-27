@@ -173,7 +173,7 @@ export default {
     return {
       selectCount: 0,
       loading: true,
-      strict: true,
+      strict: false,
       selectDate: null,
       columns: [
         {
@@ -521,9 +521,11 @@ export default {
           apiRoleSave(this.modelForm).then(res => {
             this.submitLoading = false
             if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
-              this.$Message.success('操作成功')
+              this.$Message.success(res.data.message)
               this.getModels()
               this.modelModalVisible = false
+            } else {
+              this.$Message.error(res.data.message)
             }
           })
         }
@@ -543,12 +545,14 @@ export default {
       }).then(res => {
         this.loadingPermission = false
         if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
-          this.$Message.success('操作成功')
+          this.$Message.success(res.data.message)
           // 标记重新获取菜单数据
           // this.$store.commit('setAdded', false)
           // util.initRouter(this)
           this.getModels()
           this.modalPermissionVisible = false
+        } else {
+              this.$Message.error(res.data.message)
         }
       })
     },
@@ -573,9 +577,11 @@ export default {
       }).then(res => {
         this.loadingDepartment = false
         if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
-          this.$Message.success('操作成功')
+          this.$Message.success(res.data.message)
           this.getModels()
           this.modalDepartmentVisible = false
+        } else {
+              this.$Message.error(res.data.message)
         }
       })
     },
@@ -703,8 +709,10 @@ export default {
           apiRoleSaveDefault(params).then(res => {
             this.$Modal.remove()
             if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
-              this.$Message.success('操作成功')
+              this.$Message.success(res.data.message)
               this.getModels()
+            } else {
+              this.$Message.error(res.data.message)
             }
           })
         }
@@ -723,8 +731,10 @@ export default {
           apiRoleSaveDefault(params).then(res => {
             this.$Modal.remove()
             if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
-              this.$Message.success('操作成功')
+              this.$Message.success(res.data.message)
               this.getModels()
+            } else {
+              this.$Message.error(res.data.message)
             }
           })
         }

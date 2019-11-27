@@ -63,7 +63,7 @@
             <DropdownMenu slot="list">
               <DropdownItem name="exportData">导出所选数据</DropdownItem>
               <DropdownItem name="exportAll">导出全部数据</DropdownItem>
-              <DropdownItem name="importData">导入数据[付费]</DropdownItem>
+              <DropdownItem name="importData">导入数据</DropdownItem>
             </DropdownMenu>
           </Dropdown>
           <Button @click="initDictData" icon="md-refresh">刷新</Button>

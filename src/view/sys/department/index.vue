@@ -332,12 +332,14 @@ export default {
           apiDepartmentCreate(this.modelFormAdd).then(res => {
             this.loadingSubmit = false
             if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
-              this.$Message.success('添加成功')
+              this.$Message.success(res.data.message)
               // 标记重新获取数据
               // this.$store.commit('setAdded', false)
               // util.initRouter(this)
               this.init()
               this.modelModalVisible = false
+            } else {
+              this.$Message.error(res.data.message)
             }
           })
         }
