@@ -226,7 +226,7 @@ export const apiDictDataDelete = (ids, params) => {
 }
 
 export const apiDictDataViewName = (name, params) => {
-  return axios.getRequest('/dict-data/list-name/' + name, params)
+  return axios.getRequest('/dict-data/view-name/' + name, params)
 }
 
 export const apiDictDataDisable = (id, params) => {
