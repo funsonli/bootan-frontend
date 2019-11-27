@@ -11,6 +11,8 @@ import {
 } from '@/api/index'
 import { setToken, getToken } from '@/libs/util'
 import { Message } from 'iview'
+import router from '@/router/index'
+import Cookies from 'js-cookie'
 
 export default {
   state: {
@@ -89,7 +91,6 @@ export default {
           switch (parseInt(data.code)) {
             case 401:
               Cookies.set('userInfo', '')
-              setStore('accessToken', '')
               router.push('/login')
               break
             case 403:
@@ -144,6 +145,9 @@ export default {
             commit('setHasGetInfo', true)
             resolve(data)
           }).catch(err => {
+            commit('setToken', '')
+            commit('setAccess', [])
+            resolve()
             reject(err)
           })
         } catch (error) {

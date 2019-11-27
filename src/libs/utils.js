@@ -1,9 +1,9 @@
 import axios from 'axios'
-import { getToken } from '@/libs/util'
+import { setToken, getToken } from '@/libs/util'
 import { getMenuList } from '@/api/index'
 import lazyLoading from './lazyLoading.js'
-// import router from '@/router/index'
-// import Cookies from 'js-cookie'
+import router from '@/router/index'
+import Cookies from 'js-cookie'
 
 let util = {
 
@@ -337,6 +337,30 @@ util.initRouter = function (vm) {
     let accessToken = getToken()
     // 加载菜单
     axios.get(getMenuList, { headers: { 'access-token': accessToken } }).then(res => {
+      const data = res.data
+      switch (parseInt(data.code)) {
+        case 401:
+          Cookies.set('userInfo', '')
+          setToken('')
+          router.push('/login')
+          break
+        case 403:
+          if (data.message !== null) {
+            Message.error(data.message)
+          } else {
+            Message.error('未知错误')
+          }
+          break
+        case 500:
+          alert(data.message)
+          if (data.message !== null) {
+            Message.error(data.message)
+          } else {
+            Message.error('未知错误')
+          }
+          break
+      }
+
       let menuData = res.data.data
       if (!menuData) {
         return
