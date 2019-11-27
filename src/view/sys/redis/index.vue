@@ -200,7 +200,7 @@
 
 <script>
 import {
-  apiRedisIndex,
+  apiRedisListIndex,
   apiRedisSave,
   apiRedisDelete
 } from '@/api/index'
@@ -469,7 +469,7 @@ export default {
       if (typeof this.searchForm.status === 'undefined') {
         this.searchForm.status = ''
       }
-      apiRedisIndex(this.searchForm).then(res => {
+      apiRedisListIndex(this.searchForm).then(res => {
         this.loading = false
         if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
           this.data = res.data.data.content
@@ -700,7 +700,7 @@ export default {
         this.exportType = 'all'
         this.exportModalVisible = true
         this.exportTitle = '确认导出全部 ' + this.total + ' 条数据'
-        apiRedisAll().then(res => {
+        apiRedisListAll().then(res => {
           if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
             this.exportDataList = res.data.data
           }

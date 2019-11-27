@@ -207,10 +207,10 @@
 
 <script>
 import {
-  apiQuartzIndex,
+  apiQuartzListIndex,
   apiQuartzSave,
   apiQuartzDelete,
-  apiQuartzAll,
+  apiQuartzListAll,
   apiQuartzImportData,
   apiQuartzEnable,
   apiQuartzDisable
@@ -471,7 +471,7 @@ export default {
       if (typeof this.searchForm.status === 'undefined' || this.searchForm.status === 'undefined') {
         this.searchForm.status = ''
       }
-      apiQuartzIndex(this.searchForm).then(res => {
+      apiQuartzListIndex(this.searchForm).then(res => {
         this.loading = false
         if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
           this.data = res.data.data.content
@@ -700,7 +700,7 @@ export default {
         this.exportType = 'all'
         this.exportModalVisible = true
         this.exportTitle = '确认导出全部 ' + this.total + ' 条数据'
-        apiQuartzAll().then(res => {
+        apiQuartzListAll().then(res => {
           if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
             this.exportDataList = res.data.data
           }

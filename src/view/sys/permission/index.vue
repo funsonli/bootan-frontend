@@ -284,7 +284,7 @@
 
 <script>
 import {
-  apiPermissionAll,
+  apiPermissionListAll,
   apiDictDataViewName,
   apiPermissionCreate,
   apiPermissionUpdate,
@@ -358,7 +358,7 @@ export default {
     /* **** 和后台交互代码区块 begin **** */
     getModels () {
       this.loading = true
-      apiPermissionAll().then(res => {
+      apiPermissionListAll().then(res => {
         this.loading = false
         if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
           // 仅展开指定级数 默认后台已展开所有

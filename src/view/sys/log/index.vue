@@ -201,10 +201,10 @@
 
 <script>
 import {
-  apiLogIndex,
+  apiLogListIndex,
   apiLogSave,
   apiLogDelete,
-  apiLogAll,
+  apiLogListAll,
   apiLogImportData,
   apiLogEnable,
   apiLogDisable
@@ -487,7 +487,7 @@ export default {
       if (typeof this.searchForm.status === 'undefined') {
         this.searchForm.status = ''
       }
-      apiLogIndex(this.searchForm).then(res => {
+      apiLogListIndex(this.searchForm).then(res => {
         this.loading = false
         if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
           this.data = res.data.data.content
@@ -713,7 +713,7 @@ export default {
         this.exportType = 'all'
         this.exportModalVisible = true
         this.exportTitle = '确认导出全部 ' + this.total + ' 条数据'
-        apiLogAll().then(res => {
+        apiLogListAll().then(res => {
           if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
             this.exportDataList = res.data.data
           }

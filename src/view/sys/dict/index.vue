@@ -208,13 +208,13 @@
 
 <script>
 import {
-  apiDictDataIndex,
+  apiDictDataListIndex,
   apiDictDataSave,
   apiDictDataDelete,
   apiDictDataImportData,
   apiDictDataEnable,
   apiDictDataDisable,
-  apiDictAll,
+  apiDictListAll,
   apiDictSave,
   apiDictDelete,
   apiDictSearch
@@ -475,7 +475,7 @@ export default {
       if (typeof this.searchForm.status === 'undefined' || this.searchForm.status === 'undefined') {
         this.searchForm.status = ''
       }
-      apiDictDataIndex(this.searchForm).then(res => {
+      apiDictDataListIndex(this.searchForm).then(res => {
         this.loading = false
         if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
           this.data = res.data.data.content
@@ -484,7 +484,7 @@ export default {
       })
     },
     getModelsDict () {
-      apiDictAll(this.searchForm).then(res => {
+      apiDictListAll(this.searchForm).then(res => {
         this.loadingDict = true
         if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
           this.loadingDict = false
@@ -652,14 +652,14 @@ export default {
         this.exportType = 'all'
         this.exportModalVisible = true
         this.exportTitle = '确认导出全部 ' + this.total + ' 条数据'
-        apiDictDataIndex(this.searchForm).then(res => {
+        apiDictDataListIndex(this.searchForm).then(res => {
           if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
             this.exportDataList = res.data.data.content
           }
         })
         for (var i = 0; i < Math.ceil(this.total / this.searchForm.pageSize) - 1; i++) {
           setTimeout(() => {
-            apiDictDataIndex(this.searchForm).then(res => {
+            apiDictDataListIndex(this.searchForm).then(res => {
               if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
                 this.exportDataList = this.exportDataList.concat(res.data.data.content)
                 this.searchForm.pageNumber = 1

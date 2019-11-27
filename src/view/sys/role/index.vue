@@ -158,8 +158,8 @@
 
 <script>
 import {
-  apiRoleIndex,
-  apiPermissionAll,
+  apiRoleListIndex,
+  apiPermissionListAll,
   apiDepartmentList,
   apiRoleSaveDefault,
   apiRoleDelete,
@@ -483,7 +483,7 @@ export default {
     getModels () {
     // 多条件带分页搜索用户列表
       this.loading = true
-      apiRoleIndex(this.searchForm).then(res => {
+      apiRoleListIndex(this.searchForm).then(res => {
         this.loading = false
         if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
           this.data = res.data.data.content
@@ -493,7 +493,7 @@ export default {
     },
     getPermissionAll () {
       this.treeLoading = true
-      apiPermissionAll().then(res => {
+      apiPermissionListAll().then(res => {
         this.treeLoading = false
         if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
           this.deleteDisableNode(res.data.data)

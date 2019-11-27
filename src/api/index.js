@@ -29,16 +29,20 @@ export const apiCommonUpload = (params) => {
   return axios.getRequest('/common/upload', params)
 }
 
-export const apiUserIndex = (params) => {
-  return axios.getRequest('/user/index', params)
+export const apiUserListIndex = (params) => {
+  return axios.getRequest('/user/list-index', params)
 }
 
 export const apiUserView = (id, params) => {
   return axios.getRequest('/user/view/' + id, params)
 }
 
-export const apiUserSave = (params) => {
-  return axios.postRequest('/user/save', params)
+export const apiUserCreate = (params) => {
+  return axios.postRequest('/user/create', params)
+}
+
+export const apiUserUpdate = (params) => {
+  return axios.postRequest('/user/update', params)
 }
 
 export const apiUserDelete = (ids, params) => {
@@ -69,12 +73,12 @@ export const apiUserEnable = (id, params) => {
   return axios.postRequest('/user/enable/' + id, params)
 }
 
-export const apiRoleAll = (params) => {
-  return axios.getRequest('/role/all', params)
+export const apiRoleListAll = (params) => {
+  return axios.getRequest('/role/list-all', params)
 }
 
-export const apiRoleIndex = (params) => {
-  return axios.getRequest('/role/index', params)
+export const apiRoleListIndex = (params) => {
+  return axios.getRequest('/role/list-index', params)
 }
 
 export const apiRoleSave = (params) => {
@@ -97,12 +101,12 @@ export const apiRoleSaveDefault = (params) => {
   return axios.postRequest('/role/save-default', params)
 }
 
-export const apiPermissionAll = (params) => {
-  return axios.getRequest('/permission/all', params)
+export const apiPermissionListAll = (params) => {
+  return axios.getRequest('/permission/list-all', params)
 }
 
-export const apiPermissionIndex = (params) => {
-  return axios.getRequest('/permission/index', params)
+export const apiPermissionListIndex = (params) => {
+  return axios.getRequest('/permission/list-index', params)
 }
 
 export const apiPermissionSave = (params) => {
@@ -129,16 +133,16 @@ export const apiPermissionMenuList = (params) => {
   return axios.getRequest('/permission/menu-list', params)
 }
 
-export const apiDepartmentAll = (params) => {
-  return axios.getRequest('/department/all', params)
+export const apiDepartmentListAll = (params) => {
+  return axios.getRequest('/department/list-all', params)
 }
 
 export const apiDepartmentList = (parentId, params) => {
   return axios.getRequest('/department/list/' + parentId, params)
 }
 
-export const apiDepartmentIndex = (params) => {
-  return axios.getRequest('/department/index', params)
+export const apiDepartmentListIndex = (params) => {
+  return axios.getRequest('/department/list-index', params)
 }
 
 export const apiDepartmentSave = (params) => {
@@ -161,8 +165,8 @@ export const apiDepartmentSearch = (keyword, params) => {
   return axios.getRequest('/department/search/' + keyword, params)
 }
 
-export const apiStudentIndex = (params) => {
-  return axios.getRequest('/student/index', params)
+export const apiStudentListIndex = (params) => {
+  return axios.getRequest('/student/list-index', params)
 }
 
 export const apiStudentSave = (params) => {
@@ -173,8 +177,8 @@ export const apiStudentDelete = (ids, params) => {
   return axios.deleteRequest('/student/delete/' + ids, params)
 }
 
-export const apiStudentAll = (params) => {
-  return axios.getRequest('/student/all', params)
+export const apiStudentListAll = (params) => {
+  return axios.getRequest('/student/list-all', params)
 }
 
 export const apiStudentImportData = (params) => {
@@ -189,12 +193,12 @@ export const apiStudentEnable = (id, params) => {
   return axios.postRequest('/student/enable/' + id, params)
 }
 
-export const apiDictAll = (params) => {
-  return axios.getRequest('/dict/all', params)
+export const apiDictListAll = (params) => {
+  return axios.getRequest('/dict/list-all', params)
 }
 
-export const apiDictIndex = (params) => {
-  return axios.getRequest('/dict/index', params)
+export const apiDictListIndex = (params) => {
+  return axios.getRequest('/dict/list-index', params)
 }
 
 export const apiDictSave = (params) => {
@@ -209,8 +213,8 @@ export const apiDictSearch = (keyword, params) => {
   return axios.getRequest('/dict/search/' + keyword, params)
 }
 
-export const apiDictDataIndex = (params) => {
-  return axios.getRequest('/dict-data/index', params)
+export const apiDictDataListIndex = (params) => {
+  return axios.getRequest('/dict-data/list-index', params)
 }
 
 export const apiDictDataSave = (params) => {
@@ -222,7 +226,7 @@ export const apiDictDataDelete = (ids, params) => {
 }
 
 export const apiDictDataViewName = (name, params) => {
-  return axios.getRequest('/dict-data/view-name/' + name, params)
+  return axios.getRequest('/dict-data/list-name/' + name, params)
 }
 
 export const apiDictDataDisable = (id, params) => {
@@ -237,8 +241,8 @@ export const apiDictDataImportData = (params) => {
   return axios.importRequest('/dict-data/import-data', params)
 }
 
-export const apiLogIndex = (params) => {
-  return axios.getRequest('/log/index', params)
+export const apiLogListIndex = (params) => {
+  return axios.getRequest('/log/list-index', params)
 }
 
 export const apiLogSave = (params) => {
@@ -249,8 +253,8 @@ export const apiLogDelete = (ids, params) => {
   return axios.deleteRequest('/log/delete/' + ids, params)
 }
 
-export const apiLogAll = (params) => {
-  return axios.getRequest('/log/all', params)
+export const apiLogListAll = (params) => {
+  return axios.getRequest('/log/list-all', params)
 }
 
 export const apiLogImportData = (params) => {
@@ -265,8 +269,8 @@ export const apiLogEnable = (id, params) => {
   return axios.postRequest('/log/enable/' + id, params)
 }
 
-export const apiRedisIndex = (params) => {
-  return axios.getRequest('/redis/index', params)
+export const apiRedisListIndex = (params) => {
+  return axios.getRequest('/redis/list-index', params)
 }
 
 export const apiRedisSave = (params) => {
@@ -289,8 +293,8 @@ export const apiRedisKeySize = (params) => {
   return axios.getRequest('/redis/key-size', params)
 }
 
-export const apiFileIndex = (params) => {
-  return axios.getRequest('/file/index', params)
+export const apiFileListIndex = (params) => {
+  return axios.getRequest('/file/list-index', params)
 }
 
 export const apiFileSave = (params) => {
@@ -305,12 +309,12 @@ export const apiFileCopy = (params) => {
   return axios.deleteRequest('/file/copy/' + params)
 }
 
-export const apiQuartzIndex = (params) => {
-  return axios.getRequest('/quartz/index', params)
+export const apiQuartzListIndex = (params) => {
+  return axios.getRequest('/quartz/list-index', params)
 }
 
-export const apiQuartzAll = (params) => {
-  return axios.getRequest('/quartz/all', params)
+export const apiQuartzListAll = (params) => {
+  return axios.getRequest('/quartz/list-all', params)
 }
 
 export const apiQuartzView = (id, params) => {
@@ -335,4 +339,83 @@ export const apiQuartzEnable = (id, params) => {
 
 export const apiQuartzDisable = (id, params) => {
   return axios.postRequest('/quartz/disable/' + id, params)
+}
+
+export const apiActCategoryListIndex = (params) => {
+  return axios.getRequest('/act-category/list-index', params)
+}
+
+export const apiActCategoryListAll = (params) => {
+  return axios.getRequest('/act-category/list-all', params)
+}
+
+export const apiActCategoryView = (id, params) => {
+  return axios.getRequest('/act-category/view/' + id, params)
+}
+
+export const apiActCategorySave = (params) => {
+  return axios.postRequest('/act-category/save', params)
+}
+
+export const apiActCategoryCreate = (params) => {
+  return axios.postRequest('/act-category/create', params)
+}
+
+export const apiActCategoryUpdate = (params) => {
+  return axios.postRequest('/act-category/update', params)
+}
+
+export const apiActCategoryDelete = (ids, params) => {
+  return axios.deleteRequest('/act-category/delete/' + ids, params)
+}
+
+export const apiActCategoryImportData = (params) => {
+  return axios.importRequest('/act-category/import-data', params)
+}
+
+export const apiActCategoryEnable = (id, params) => {
+  return axios.postRequest('/act-category/enable/' + id, params)
+}
+
+export const apiActCategoryDisable = (id, params) => {
+  return axios.postRequest('/act-category/disable/' + id, params)
+}
+export const apiActModelListIndex = (params) => {
+  return axios.getRequest('/act-model/list-index', params)
+}
+
+export const apiActModelListAll = (params) => {
+  return axios.getRequest('/act-model/list-all', params)
+}
+
+export const apiActModelView = (id, params) => {
+  return axios.getRequest('/act-model/view/' + id, params)
+}
+
+export const apiActModelSave = (params) => {
+  return axios.postRequest('/act-model/save', params)
+}
+
+export const apiActModelCreate = (params) => {
+  return axios.postRequest('/act-model/create', params)
+}
+
+export const apiActModelUpdate = (params) => {
+  return axios.postRequest('/act-model/update', params)
+}
+
+export const apiActModelDelete = (ids, params) => {
+  return axios.deleteRequest('/act-model/delete/' + ids, params)
+}
+
+export const apiActModelImportData = (params) => {
+  return axios.importRequest('/act-model/import-data', params)
+}
+
+export const apiActModelEnable = (id, params) => {
+  return axios.postRequest('/act-model/enable/' + id, params)
+}
+
+export const apiActModelDisable = (id, params) => {
+  return axios.postRequest('/act-model/disable/' + id, params)
 }

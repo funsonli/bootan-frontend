@@ -220,11 +220,11 @@
 
 <script>
 import {
-  apiActModelIndex,
+  apiActModelListIndex,
   apiActModelCreate,
   apiActModelUpdate,
   apiActModelDelete,
-  apiActModelAll,
+  apiActModelListAll,
   apiActModelImportData,
   apiActModelEnable,
   apiActModelDisable
@@ -507,7 +507,7 @@ export default {
       if (typeof this.searchForm.status === 'undefined' || this.searchForm.status === 'undefined') {
         this.searchForm.status = ''
       }
-      apiActModelIndex(this.searchForm).then(res => {
+      apiActModelListIndex(this.searchForm).then(res => {
         this.loading = false
         if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
           this.data = res.data.data.content
@@ -793,7 +793,7 @@ export default {
         this.exportType = 'all'
         this.exportModalVisible = true
         this.exportTitle = '确认导出全部 ' + this.total + ' 条数据'
-        apiActModelAll().then(res => {
+        apiActModelListAll().then(res => {
           if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
             this.exportDataList = res.data.data
           }

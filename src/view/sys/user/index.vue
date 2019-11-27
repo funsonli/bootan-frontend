@@ -266,8 +266,8 @@
 </template>
 <script>
 import {
-  apiRoleIndex,
-  apiUserIndex,
+  apiRoleListIndex,
+  apiUserListIndex,
   apiUserDelete,
   apiUserCreate,
   apiUserUpdate,
@@ -812,7 +812,7 @@ export default {
       if (typeof this.searchForm.status === 'undefined' || this.searchForm.status === 'undefined') {
         this.searchForm.status = ''
       }
-      apiUserIndex(this.searchForm).then(res => {
+      apiUserListIndex(this.searchForm).then(res => {
         this.loading = false
         if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
           this.data = res.data.data.content
@@ -823,7 +823,7 @@ export default {
       })
     },
     getRoleList () {
-      apiRoleIndex().then(res => {
+      apiRoleListIndex().then(res => {
         if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
           this.roleList = res.data.data.content
         }
@@ -975,14 +975,14 @@ export default {
         this.exportModalVisible = true
         this.exportTitle = '确认导出全部 ' + this.total + ' 条数据'
         this.searchForm.pageNumber = 1
-        apiUserIndex(this.searchForm).then(res => {
+        apiUserListIndex(this.searchForm).then(res => {
           if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
             this.exportData = res.data.data.content
           }
         })
         for (var i = 0; i < Math.ceil(this.total / this.searchForm.pageSize) - 1; i++) {
           setTimeout(() => {
-            apiUserIndex(this.searchForm).then(res => {
+            apiUserListIndex(this.searchForm).then(res => {
               if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
                 this.exportData = this.exportData.concat(res.data.data.content)
                 this.searchForm.pageNumber = 1
