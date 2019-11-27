@@ -309,6 +309,34 @@ export const apiFileCopy = (params) => {
   return axios.deleteRequest('/file/copy/' + params)
 }
 
+export const apiMessageListIndex = (params) => {
+  return axios.getRequest('/message/list-index', params)
+}
+
+export const apiMessageSave = (params) => {
+  return axios.postRequest('/message/save', params)
+}
+
+export const apiMessageDelete = (ids, params) => {
+  return axios.deleteRequest('/message/delete/' + ids, params)
+}
+
+export const apiMessageView = (id, params) => {
+  return axios.getRequest('/message/view/' + id, params)
+}
+
+export const apiMessageStateListIndex = (params) => {
+  return axios.getRequest('/message-state/list-index', params)
+}
+
+export const apiMessageStateDelete = (ids, params) => {
+  return axios.deleteRequest('/message-state/delete/' + ids, params)
+}
+
+export const apiMessageStateSave = (params) => {
+  return axios.postRequest('/message-state/save', params)
+}
+
 export const apiQuartzListIndex = (params) => {
   return axios.getRequest('/quartz/list-index', params)
 }
