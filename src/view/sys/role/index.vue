@@ -488,6 +488,8 @@ export default {
         if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
           this.data = res.data.data.content
           this.total = res.data.data.totalElements
+        } else {
+          this.$Message.error(res.data.message)
         }
       })
     },

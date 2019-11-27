@@ -480,6 +480,8 @@ export default {
         if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
           this.data = res.data.data.content
           this.total = res.data.data.totalElements
+        } else {
+          this.$Message.error(res.data.message)
         }
       })
     },
@@ -655,6 +657,8 @@ export default {
         apiDictDataListIndex(this.searchForm).then(res => {
           if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
             this.exportDataList = res.data.data.content
+          } else {
+            this.$Message.error(res.data.message)
           }
         })
         for (var i = 0; i < Math.ceil(this.total / this.searchForm.pageSize) - 1; i++) {
@@ -663,6 +667,8 @@ export default {
               if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
                 this.exportDataList = this.exportDataList.concat(res.data.data.content)
                 this.searchForm.pageNumber = 1
+              } else {
+                this.$Message.error(res.data.message)
               }
             })
             this.searchForm.pageNumber = this.searchForm.pageNumber + 1

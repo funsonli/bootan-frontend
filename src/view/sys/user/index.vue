@@ -978,6 +978,8 @@ export default {
         apiUserListIndex(this.searchForm).then(res => {
           if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
             this.exportData = res.data.data.content
+          } else {
+            this.$Message.error(res.data.message)
           }
         })
         for (var i = 0; i < Math.ceil(this.total / this.searchForm.pageSize) - 1; i++) {
@@ -986,6 +988,8 @@ export default {
               if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
                 this.exportData = this.exportData.concat(res.data.data.content)
                 this.searchForm.pageNumber = 1
+              } else {
+                this.$Message.error(res.data.message)
               }
             })
             this.searchForm.pageNumber = this.searchForm.pageNumber + 1
