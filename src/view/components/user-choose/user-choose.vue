@@ -69,7 +69,7 @@
 </template>
 
 <script>
-import { apiUserIndex } from '@/api/index'
+import { apiUserListIndex } from '@/api/index'
 import departmentChoose from '@/view/components/department-choose/department-choose'
 export default {
   name: 'userChoose',
@@ -250,7 +250,7 @@ export default {
   methods: {
     getUserDataList () {
       this.userLoading = true
-      apiUserIndex(this.searchUserForm).then(res => {
+      apiUserListIndex(this.searchUserForm).then(res => {
         this.userLoading = false
         if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
           this.userData = res.data.data.content

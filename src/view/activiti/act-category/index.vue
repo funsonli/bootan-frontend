@@ -453,7 +453,7 @@ export default {
       this.$refs.modelForm.validate(valid => {
         if (valid) {
           this.loadingSubmit = true
-          if (this.modalType == 0) {
+          if (this.modalType === 0) {
             apiActCategoryCreate(this.modelForm).then(res => {
               this.loadingSubmit = false
               if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {

@@ -106,7 +106,7 @@
         <Form-item label="描述" prop="description">
           <Input  v-model="modelForm.description" placeholder="请输入描述"/>
         </Form-item>
-        <FormItem label="类型" prop="type">
+        <!-- <FormItem label="类型" prop="type">
           <Select v-model="modelForm.type" placeholder="请选择">
             <Option
               v-for="(item) in typeList"
@@ -114,7 +114,7 @@
               :value="item.value"
             >{{item.label}}</Option>
           </Select>
-        </FormItem>
+        </FormItem> -->
         <FormItem label="排序" prop="sortOrder">
           <Input type="number" v-model="modelForm.sortOrder" placeholder="值越小越靠前"/>
         </FormItem>
@@ -226,6 +226,8 @@ import {
   apiActModelDelete,
   apiActModelListAll,
   apiActModelImportData,
+  apiActModelDeploy,
+  apiActModelExportXml,
   apiActModelEnable,
   apiActModelDisable
 } from '@/api/index'
@@ -270,28 +272,28 @@ export default {
         { title: '模型版本', key: 'version', sortable: true },
         { title: '描述', key: 'description', sortable: true },
 
-        {
-          title: '类型',
-          key: 'type',
-          align: 'center',
-          render: (h, params) => {
-            let re = ''
-            this.typeList.forEach((item) => {
-              if (item.value === params.row.type) {
-                re = item.label
-              }
-            })
+        // {
+        //   title: '类型',
+        //   key: 'type',
+        //   align: 'center',
+        //   render: (h, params) => {
+        //     let re = ''
+        //     this.typeList.forEach((item) => {
+        //       if (item.value === params.row.type) {
+        //         re = item.label
+        //       }
+        //     })
 
-            return h('div', re)
-          },
-          filters: [],
-          filterMultiple: false,
-          filterRemote (value, row) {
-            that.searchForm.type = value[0]
-            that.searchForm.type = that.searchForm.type + ''
-            that.getModels()
-          }
-        },
+        //     return h('div', re)
+        //   },
+        //   filters: [],
+        //   filterMultiple: false,
+        //   filterRemote (value, row) {
+        //     that.searchForm.type = value[0]
+        //     that.searchForm.type = that.searchForm.type + ''
+        //     that.getModels()
+        //   }
+        // },
 
         { title: '排序', key: 'sortOrder', sortable: true },
 
@@ -329,35 +331,35 @@ export default {
           }
         },
         { title: '创建时间', key: 'createdAt', sortable: true, sortType: 'desc' },
-        //{ title: '更新时间', key: 'updatedAt', sortable: true },
+        // { title: '更新时间', key: 'updatedAt', sortable: true },
 
         {
           title: '操作',
           key: 'action',
           align: 'center',
           fixed: 'right',
-          width: 256,
+          width: 386,
           render: (h, params) => {
             return h('div', [
-              h(
-                'Button',
-                {
-                  props: {
-                    type: 'default',
-                    size: 'small',
-                    icon: 'ios-eye'
-                  },
-                  style: {
-                    marginRight: '5px'
-                  },
-                  on: {
-                    click: () => {
-                      this.viewModal(params.row)
-                    }
-                  }
-                },
-                '查看'
-              ),
+              // h(
+              //   'Button',
+              //   {
+              //     props: {
+              //       type: 'default',
+              //       size: 'small',
+              //       icon: 'ios-eye'
+              //     },
+              //     style: {
+              //       marginRight: '5px'
+              //     },
+              //     on: {
+              //       click: () => {
+              //         this.viewModal(params.row)
+              //       }
+              //     }
+              //   },
+              //   '查看'
+              // ),
               h(
                 'Button',
                 {
@@ -381,9 +383,44 @@ export default {
                 'Button',
                 {
                   props: {
+                    type: 'success',
+                    size: 'small'
+                  },
+                  style: {
+                    marginRight: '5px'
+                  },
+                  on: {
+                    click: () => {
+                      this.deployModal(params.row)
+                    }
+                  }
+                },
+                '部署发布'
+              ),
+              h(
+                'Button',
+                {
+                  props: {
+                    type: 'default',
+                    size: 'small'
+                  },
+                  style: {
+                    marginRight: '5px'
+                  },
+                  on: {
+                    click: () => {
+                      this.exportModal(params.row)
+                    }
+                  }
+                },
+                '导出XML'
+              ),
+              h(
+                'Button',
+                {
+                  props: {
                     type: 'primary',
-                    size: 'small',
-                    icon: 'ios-create-outline'
+                    size: 'small'
                   },
                   style: {
                     marginRight: '5px'
@@ -449,8 +486,8 @@ export default {
       importTableData: [],
       importColumns: [],
       modelerModalVisible: false,
-      domain: "",
-      modelerUrl: "",
+      domain: '',
+      modelerUrl: '',
       typeList: [
         {
           label: '类型1',
@@ -521,7 +558,7 @@ export default {
       this.$refs.modelForm.validate(valid => {
         if (valid) {
           this.loadingSubmit = true
-          if (this.modalType == 0) {
+          if (this.modalType === 0) {
             apiActModelCreate(this.modelForm).then(res => {
               this.loadingSubmit = false
               if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
@@ -691,7 +728,7 @@ export default {
       this.modelForm = modelInfo
       this.modelModalVisible = true
     },
-    designModal(v) {
+    designModal (v) {
       // if (!this.domain) {
       //   this.$Modal.confirm({
       //     title: "您还未配置访问域名",
@@ -707,33 +744,56 @@ export default {
       // }
       this.modelerUrl = `http://localhost:8686/modeler.html?modelId=${
         v.id
-      }&access-token=${getToken()}`;
-      this.modelerModalVisible = true;
-      this.loadingModeler = true;
-      let that = this;
+      }&access-token=${getToken()}`
+      this.modelerModalVisible = true
+      this.loadingModeler = true
+      let that = this
       // 判断iframe是否加载完毕
-      let iframe = document.getElementById("iframe");
+      let iframe = document.getElementById('iframe')
       if (iframe.attachEvent) {
-        iframe.attachEvent("onload", function() {
-          //iframe加载完成后你需要进行的操作
-          that.loadingModeler = false;
-        });
+        iframe.attachEvent('onload', function () {
+          // iframe加载完成后你需要进行的操作
+          that.loadingModeler = false
+        })
       } else {
-        iframe.onload = function() {
-          //iframe加载完成后你需要进行的操作
-          that.loadingModeler = false;
-        };
+        iframe.onload = function () {
+          // iframe加载完成后你需要进行的操作
+          that.loadingModeler = false
+        }
       }
     },
-    handleClose() {
+    handleClose () {
       this.$Modal.confirm({
-        title: "确认关闭",
-        content: "请记得点击左上角保存按钮，确定关闭编辑器?",
+        title: '确认关闭',
+        content: '请记得点击左上角保存按钮，确定关闭编辑器?',
         onOk: () => {
-          this.getModels();
-          this.modelerModalVisible = false;
+          this.getModels()
+          this.modelerModalVisible = false
         }
-      });
+      })
+    },
+    deployModal (v) {
+      let that = this
+      this.$Modal.confirm({
+        title: '确认部署发布',
+        content: '您确认要部署发布模型 ' + v.name + ' ?',
+        loading: true,
+        onOk: () => {
+          apiActModelDeploy(v.id).then(res => {
+            this.$Modal.remove()
+            if (res.success) {
+              setTimeout(function () {
+                that.showJump()
+              }, 300)
+            }
+          })
+        }
+      })
+    },
+    exportModal (v) {
+      window.open(
+        apiActModelExportXml + v.id + '?access-token=' + getToken()
+      )
     },
     /* **** 页面内按钮交互代码 end **** */
 
