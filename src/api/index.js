@@ -447,3 +447,57 @@ export const apiActModelEnable = (id, params) => {
 export const apiActModelDisable = (id, params) => {
   return axios.postRequest('/act-model/disable/' + id, params)
 }
+
+export const apiActModelDeploy = (id, params) => {
+  return axios.postRequest('/act-model/deploy/' + id, params)
+}
+
+export const apiActModelExportXml = '/bootan/act-model/export-xml/'
+
+export const apiActProcessListIndex = (params) => {
+  return axios.getRequest('/act-process/list-index', params)
+}
+
+export const apiActProcessListAll = (params) => {
+  return axios.getRequest('/act-process/list-all', params)
+}
+
+export const apiActProcessView = (id, params) => {
+  return axios.getRequest('/act-process/view/' + id, params)
+}
+
+export const apiActProcessSearch = (keyword, params) => {
+  return axios.getRequest('/act-process/search/' + keyword, params)
+}
+
+export const apiActProcessSave = (params) => {
+  return axios.postRequest('/act-process/save', params)
+}
+
+export const apiActProcessCreate = (params) => {
+  return axios.postRequest('/act-process/create', params)
+}
+
+export const apiActProcessUpdate = (params) => {
+  return axios.postRequest('/act-process/update', params)
+}
+
+export const apiActProcessDelete = (ids, params) => {
+  return axios.deleteRequest('/act-process/delete/' + ids, params)
+}
+
+export const apiActProcessImportData = (params) => {
+  return axios.importRequest('/act-process/import-data', params)
+}
+
+export const apiActProcessExportData = (params) => {
+  return axios.getRequest('/act-process/export-data', params)
+}
+
+export const apiActProcessEnable = (id, params) => {
+  return axios.postRequest('/act-process/enable/' + id, params)
+}
+
+export const apiActProcessDisable = (id, params) => {
+  return axios.postRequest('/act-process/disable/' + id, params)
+}
