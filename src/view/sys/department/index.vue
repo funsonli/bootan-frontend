@@ -145,7 +145,7 @@ import {
 } from '@/api/index'
 import IconChoose from '@/view/components/icon-choose/icon-choose'
 export default {
-  name: 'permission-manage',
+  name: 'department-manage',
   components: {
     IconChoose
   },
