@@ -137,7 +137,6 @@
 import {
   apiDepartmentListAll,
   apiUserDepartmentUser,
-  apiDepartmentList,
   apiDepartmentCreate,
   apiDepartmentUpdate,
   apiDepartmentDelete,
