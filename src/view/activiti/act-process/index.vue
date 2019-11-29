@@ -48,7 +48,7 @@
       </Form>
     </Row>
     <Row class="table-operation-con">
-      <Button @click="addModal" type="primary" icon="md-add">创建</Button>
+      <Button @click="uploadModal" type="primary" icon="md-add">部署流程文件</Button>
       <Button @click="deleteBatch" icon="md-trash">批量删除</Button>
       <Dropdown @on-click="changeOperationDropDown">
         <Button>
@@ -117,6 +117,27 @@
         <Button type="text" @click="cancelModal">取消</Button>
         <Button type="primary" :loading="loadingSubmit" @click="saveModel">提交</Button>
       </div>
+    </Modal>
+
+    <!-- 部署上传 -->
+    <Modal title="部署流程文件" v-model="deployModalVisible" :mask-closable="false" :width="520">
+      <Upload
+        :action="deployFileUrl"
+        :headers="accessToken"
+        :on-success="handleSuccess"
+        :on-error="handleError"
+        :format="['zip','bar','bpmn','xml']"
+        :max-size="5120"
+        :on-format-error="handleFormatError"
+        :on-exceeded-size="handleMaxSize"
+        type="drag"
+        ref="up"
+      >
+        <div style="padding: 20px 0">
+          <Icon type="ios-cloud-upload" size="52" style="color: #3399ff"></Icon>
+          <p>点击这里或将文件拖拽到这里上传</p>请选择BPMN文件，仅支持zip、bpmn20.xml、bar、bpmn格式文件
+        </div>
+      </Upload>
     </Modal>
 
     <Drawer width="640" v-model="viewModalVisible" title="查看详情">
@@ -195,10 +216,13 @@ import {
   // apiActProcessSearch,
   apiActProcessImportData,
   apiActProcessExportData,
+  apiActProcessDeployFile,
+  apiActProcessConvertModel,
   apiActProcessEnable,
   apiActProcessDisable
 } from '@/api/index'
 import excel from '@/libs/excel'
+import { getToken } from '@/libs/util'
 import { importDataColumns, importData } from './import-excel.js'
 
 export default {
@@ -206,6 +230,9 @@ export default {
   data () {
     let that = this
     return {
+      accessToken: {},
+      deployFileUrl: '',
+
       selectCount: 0,
       loading: true,
       loadingSubmit: false,
@@ -332,11 +359,47 @@ export default {
                   },
                   on: {
                     click: () => {
+                      this.nodeModal(params.row)
+                    }
+                  }
+                },
+                '节点设置'
+              ),
+              h(
+                'Button',
+                {
+                  props: {
+                    type: 'default',
+                    size: 'small'
+                  },
+                  style: {
+                    marginRight: '5px'
+                  },
+                  on: {
+                    click: () => {
                       this.editModal(params.row)
                     }
                   }
                 },
                 '编辑'
+              ),
+              h(
+                'Button',
+                {
+                  props: {
+                    type: 'info',
+                    size: 'small'
+                  },
+                  style: {
+                    marginRight: '5px'
+                  },
+                  on: {
+                    click: () => {
+                      this.convertModel(params.row)
+                    }
+                  }
+                },
+                '转模型'
               ),
               h(
                 'Button',
@@ -386,6 +449,7 @@ export default {
       },
       importTableData: [],
       importColumns: [],
+      deployModalVisible: false,
       typeList: [
         {
           label: '类型1',
@@ -428,6 +492,10 @@ export default {
   },
   methods: {
     init () {
+      this.accessToken = {
+        'access-token': getToken()
+      }
+      this.deployFileUrl = apiActProcessDeployFile
       this.getModels()
     },
 
@@ -585,6 +653,9 @@ export default {
       delete this.modelForm.id
       this.modelModalVisible = true
     },
+    uploadModal () {
+      this.deployModalVisible = true
+    },
     viewModal (v) {
       let list = []
       for (let attr in v) {
@@ -625,6 +696,58 @@ export default {
       let modelInfo = JSON.parse(str)
       this.modelForm = modelInfo
       this.modelModalVisible = true
+    },
+    nodeModal (v) {
+      let query = { id: v.id, name: v.name, backRoute: this.$route.name }
+      this.$router.push({
+        name: 'process_node_edit',
+        query: query
+      })
+    },
+    convertModel (v) {
+      let that = this;
+      this.$Modal.confirm({
+        title: "确认转化",
+        content: "您确认要转化流程 " + v.name + " 为模型?",
+        loading: true,
+        onOk: () => {
+          apiActProcessConvertModel(v.id).then(res => {
+            this.$Modal.remove()
+            if (res.success) {
+              setTimeout(function () {
+                that.showJump()
+              }, 300)
+            }
+          });
+        }
+      })
+    },
+    handleFormatError(file) {
+      this.$Notice.warning({
+        title: "不支持的文件格式",
+        desc:
+          "所选文件‘ " +
+          file.name +
+          " ’格式不正确, 请选择 .zip .bar .bpmn .bpmn20.xml格式文件"
+      });
+    },
+    handleMaxSize(file) {
+      this.$Notice.warning({
+        title: "文件大小过大",
+        desc: "所选文件‘ " + file.name + " ’大小过大, 不得超过 5M."
+      });
+    },
+    handleSuccess(res, file) {
+      if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
+        this.$Message.success('部署成功，请继续编辑完善流程信息');
+        this.modalVisible = false
+        this.getModels()
+      } else {
+        this.$Message.error(res.message)
+      }
+    },
+    handleError(error, file, fileList) {
+      this.$Message.error(error.toString())
     },
     /* **** 页面内按钮交互代码 end **** */
 
