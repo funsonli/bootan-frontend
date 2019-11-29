@@ -98,7 +98,7 @@
           </FormItem>
           <Form-item>
             <Button
-              @click="updateModel"
+              @click="editModel"
               :loading="loadingSubmit"
               type="primary"
               icon="ios-create-outline"
@@ -108,7 +108,7 @@
       </Col>
     </Row>
 
-    <Modal draggable :title="modalTitle" v-model="modelModalVisible" :mask-closable="false" :width="520" :styles="{top: '30px'}"  @keydown.native.enter.prevent="saveModelNew" >
+    <Modal draggable :title="modalTitle" v-model="modelModalVisible" :mask-closable="false" :width="520" :styles="{top: '30px'}"  @keydown.native.enter.prevent="saveModel" >
       <Form ref="modelFormAdd" :model="modelFormAdd" :label-width="88" :rules="modelFormValidate">
         <FormItem label="上级名称" v-if="showParent">
           {{modelForm.name}}
@@ -183,11 +183,22 @@ export default {
       modelFormAdd: {
         parentId: '0',
         name: '',
+        type: 1,
         sortOrder: 50,
         status: 1
       },
       dataEdit: [],
       childrenData: [],
+      typeList: [
+        {
+          label: '类型1',
+          value: 1
+        },
+        {
+          label: '类型2',
+          value: 2
+        }
+      ],
       users: [],
       statusList: [
         {
@@ -279,6 +290,8 @@ export default {
           this.data = this.dataEdit = res.data.data
           this.dataEdit = JSON.parse(JSON.stringify(this.data))
           this.dataEdit.unshift({ id: '0', title: '改为[一级部门]' })
+        } else {
+          this.$Message.error(res.data.message)
         }
       })
     },
@@ -306,6 +319,8 @@ export default {
               this.selectCount = 0
               this.handleSelectNone()
               this.init()
+            } else {
+              this.$Message.error(res.data.message)
             }
           })
         }
@@ -345,7 +360,7 @@ export default {
         }
       })
     },
-    updateModel () {
+    editModel () {
       this.$refs.modelForm.validate(valid => {
         if (valid) {
           if (!this.modelForm.id) {
@@ -368,6 +383,8 @@ export default {
               // util.initRouter(this)
               this.init()
               this.modelModalVisible = false
+            } else {
+              this.$Message.error(res.data.message)
             }
           })
         }
@@ -435,6 +452,7 @@ export default {
       this.showParent = true
       this.modelFormAdd = {
         parentId: this.modelForm.id,
+        type: 1,
         sortOrder: 50,
         status: 1,
         showAlways: true
@@ -446,6 +464,7 @@ export default {
       this.showParent = false
       this.modelFormAdd = {
         parentId: '0',
+        type: 1,
         sortOrder: 50,
         status: 1
       }
