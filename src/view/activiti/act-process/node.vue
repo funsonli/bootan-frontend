@@ -3,9 +3,9 @@
 </style>-->
 <template>
   <div>
-    <Row class="table-operation-con">
-      <Button @click="addModal" type="primary" icon="md-add">添加子部门</Button>
-      <Button @click="addModalRoot" icon="md-add">添加一级部门</Button>
+    <!-- <Row class="table-operation-con">
+      <Button @click="addModal" type="primary" icon="md-add">添加子节点</Button>
+      <Button @click="addModalRoot" icon="md-add">添加一级节点</Button>
       <Button @click="deleteBatch" icon="md-trash">批量删除</Button>
       <Button @click="changeOperationDropdown('expandAll')" icon="md-list">展开所有</Button>
       <Dropdown @on-click="changeOperationDropdown">
@@ -25,25 +25,24 @@
         <span slot="open">级联</span>
         <span slot="close">单选</span>
       </i-switch>
-    </Row>
+    </Row> -->
     <Row type="flex" justify="start" class="code-row-bg">
       <Col span="6">
         <Alert show-icon>
           当前选择编辑：<span> {{selectTitle}} </span>
           <a class="select-clear" v-if="modelForm.id" @click="handleSelectNone"> 取消选择</a>
         </Alert>
-        <Input
+        <!-- <Input
           v-model="searchKey"
           suffix="ios-search"
           @on-change="handleSearch"
           placeholder="输入名称搜索"
           clearable
-        />
+        /> -->
         <div class="tree-bar" :style="{maxHeight: maxHeight}">
           <Tree
             ref="tree"
             :data="data"
-            show-checkbox
             :render="renderContent"
             @on-check-change="changeCheck"
             :check-strictly="!strictly"
@@ -53,52 +52,85 @@
       </Col>
       <Col span="9">
         <Form ref="modelForm" :model="modelForm" :label-width="85" :rules="modelFormValidate">
-          <FormItem label="上级部门" prop="parentName">
-            <Poptip trigger="click" placement="right-start" title="选择上级部门" width="250">
+          <!-- <FormItem label="上级节点" prop="parentName">
+            <Poptip trigger="click" placement="right-start" title="选择上级节点" width="250">
               <Input v-model="modelForm.parentName" readonly style="width: 300px;" />
               <div slot="content" style="position:relative;min-height:5vh">
                 <Tree :data="dataEdit" @on-select-change="changeSelectParent"></Tree>
                 <Spin size="large" fix v-if="loadingEdit"></Spin>
               </div>
             </Poptip>
+          </FormItem> -->
+          <FormItem label="名称" prop="title">
+            {{modelForm.title}}
           </FormItem>
-          <FormItem label="名称" prop="name">
-            <Input v-model="modelForm.name" />
-          </FormItem>
-          <Form-item label="描述" prop="description">
-            <Input v-model="modelForm.description" placeholder="请输入描述"/>
-          </Form-item>
-          <!-- <FormItem label="类型" prop="type">
-            <Select v-model="modelForm.type" placeholder="请选择">
+          <FormItem label="类型" prop="type">
+            <Select v-model="modelForm.type" disabled placeholder="请选择">
               <Option
                 v-for="(item) in typeList"
                 :key="item.value"
                 :value="item.value"
               >{{item.label}}</Option>
             </Select>
-          </FormItem> -->
-          <FormItem label="排序值" prop="sortOrder">
-            <InputNumber :max="1000" :min="0" v-model="modelForm.sortOrder"></InputNumber>
-            <span style="margin-left:5px">值越小越靠前</span>
           </FormItem>
-          <FormItem label="是否启用" prop="status">
-            <i-switch size="large" v-model="modelForm.status" :true-value="1" :false-value="0">
-              <span v-for="(item) in statusList" :key="item.value" :value="item.value" :slot="item.slot">{{item.label}}</span>
-            </i-switch>
-          </FormItem>
+          <div v-show="modelForm.type == 2">
+            <FormItem label="可审批人员">
+              <Checkbox v-model="chooseRole" label="0" @on-change="clickRole">
+                <Icon type="md-people" size="14" style="margin:0 2px 2px 0"></Icon>
+                <span>根据角色选择</span>
+              </Checkbox>
+              <Checkbox v-model="chooseDepartment" label="1" @on-change="clickDepartment">
+                <Icon type="ios-people" style="margin:0 2px 2px 0"></Icon>
+                <span>部门负责人</span>
+              </Checkbox>
+              <Checkbox v-model="chooseUser" label="1" @on-change="clickUser">
+                <Icon type="md-person" style="margin:0 2px 2px 0"></Icon>
+                <span>直接选择人员</span>
+              </Checkbox>
+            </FormItem>
+            <FormItem label="选择角色" v-if="chooseRole">
+              <Select v-model="modelForm.roleIds" multiple>
+                <Option
+                  v-for="item in roleList"
+                  :value="item.id"
+                  :key="item.id"
+                  :label="item.name"
+                >
+                  <span style="margin-right:10px;">{{ item.name }}</span>
+                  <span style="color:#ccc;">{{ item.description }}</span>
+                </Option>
+              </Select>
+            </FormItem>
+            <div v-show="chooseDepartment">
+              <FormItem label="选择部门">
+                <department-tree-choose
+                  multiple
+                  width="250px"
+                  @on-change="handleSelectDepTree"
+                  ref="depTree"
+                ></department-tree-choose>
+              </FormItem>
+            </div>
+            <div v-show="chooseUser">
+              <FormItem label="选择用户">
+                <user-choose @on-change="handleSelectUser" ref="user"></user-choose>
+              </FormItem>
+            </div>
+          </div>
           <Form-item>
             <Button
               @click="editModel"
               :loading="loadingSubmit"
               type="primary"
               icon="ios-create-outline"
+              :disabled="modelForm.type!=2"
             >修改并保存</Button>
           </Form-item>
         </Form>
       </Col>
     </Row>
 
-    <Modal draggable :title="modalTitle" v-model="modelModalVisible" :mask-closable="false" :width="520" :styles="{top: '30px'}"  @keydown.native.enter.prevent="saveModel" >
+    <!-- <Modal draggable :title="modalTitle" v-model="modelModalVisible" :mask-closable="false" :width="520" :styles="{top: '30px'}"  @keydown.native.enter.prevent="saveModel" >
       <Form ref="modelFormAdd" :model="modelFormAdd" :label-width="88" :rules="modelFormValidate">
         <FormItem label="上级名称" v-if="showParent">
           {{modelForm.name}}
@@ -106,10 +138,13 @@
         <FormItem label="名称" prop="name">
           <Input v-model="modelFormAdd.name" placeholder="请输入名称"/>
         </FormItem>
-        <Form-item label="描述" prop="description">
-          <Input  v-model="modelFormAdd.description" placeholder="请输入描述"/>
+        <Form-item label="关联其他表id" prop="relateId">
+          <Input  v-model="modelFormAdd.relateId" placeholder="请输入关联其他表id"/>
         </Form-item>
-        <!-- <FormItem label="类型" prop="type">
+        <Form-item label="Activiti节点ID" prop="nodeId">
+          <Input  v-model="modelFormAdd.nodeId" placeholder="请输入Activiti节点ID"/>
+        </Form-item>
+        <FormItem label="类型" prop="type">
           <Select v-model="modelFormAdd.type" placeholder="请选择">
             <Option
               v-for="(item) in typeList"
@@ -117,7 +152,7 @@
               :value="item.value"
             >{{item.label}}</Option>
           </Select>
-        </FormItem> -->
+        </FormItem>
         <FormItem label="排序" prop="sortOrder">
           <Input type="number" v-model="modelFormAdd.sortOrder" placeholder="值越小越靠前"/>
         </FormItem>
@@ -131,22 +166,39 @@
         <Button type="text" @click="cancelModal">取消</Button>
         <Button type="primary" :loading="loadingSubmit" @click="saveModel">提交</Button>
       </div>
-    </Modal>
+    </Modal> -->
   </div>
 </template>
 
 <script>
 import {
-  apiActCategoryListAll,
-  apiActCategoryCreate,
-  apiActCategoryUpdate,
-  apiActCategoryDelete,
-  apiActCategorySearch
+  apiActProcessViewNode,
+  apiActProcessUpdateNode,
+  apiRoleListAll,
+  apiActNodeCreate,
+  // apiActNodeUpdate,
+  apiActNodeDelete,
+  apiActNodeSearch
 } from '@/api/index'
+import departmentTreeChoose from '@/view/components/department-tree-choose/department-tree-choose'
+import userChoose from '@/view/components/user-choose/user-choose'
+
 export default {
-  name: 'ActCategory-manage',
+  name: 'process-node-edit',
+  components: {
+    departmentTreeChoose,
+    userChoose
+  },
   data () {
     return {
+      processId: '',
+      processName: '',
+      backRoute: '',
+      chooseUser: false,
+      chooseRole: false,
+      chooseDepartment: false,
+      roleList: [],
+      selectUsers: [],
       loading: true,
       loadingSubmit: false,
       loadingEdit: false,
@@ -160,17 +212,18 @@ export default {
       expandLevel: 1,
       modelForm: {
         id: '',
-        name: '',
-        parentId: '0',
-        parentName: '',
-        description: '',
-        type: 1,
-        sortOrder: 50,
-        status: 1
+        nodeId: '',
+        title: '',
+        type: 0,
+        userIds: [],
+        roleIds: [],
+        departmentIds: []
       },
       modelFormValidate: {
-        name: [{ required: true, message: '名称不能为空', trigger: 'blur' }],
-        sortOrder: [{ required: true, message: '排序值不能为空', trigger: 'blur', type: 'number' }]
+        // name: [{ required: true, message: '名称不能为空', trigger: 'blur' }],
+        // relateId: [{ required: true, message: '关联其他表id不能为空', trigger: 'blur' }],
+        // nodeId: [{ required: true, message: 'Activiti节点ID不能为空', trigger: 'blur' }],
+        // sortOrder: [{ required: true, message: '排序值不能为空', trigger: 'blur', type: 'number' }]
       },
       selectCount: 0,
       selectList: [],
@@ -178,7 +231,8 @@ export default {
       modelFormAdd: {
         parentId: '0',
         name: '',
-        description: '',
+        relateId: '',
+        nodeId: '',
         type: 1,
         sortOrder: 50,
         status: 1
@@ -187,12 +241,16 @@ export default {
       childrenData: [],
       typeList: [
         {
-          label: '类型1',
+          label: '开始节点',
           value: 1
         },
         {
-          label: '类型2',
+          label: '审批节点',
           value: 2
+        },
+        {
+          label: '结束节点',
+          value: 9
         }
       ],
       statusList: [
@@ -214,13 +272,17 @@ export default {
   },
   methods: {
     init () {
-      this.getModels()
+      this.backRoute = this.$route.query.backRoute
+      this.processId = this.$route.query.id
+      this.processName = this.$route.query.processName
+      this.getModels(this.processId)
+      this.getRoleList()
     },
 
     /* **** 和后台交互代码区块 begin **** */
-    getModels () {
+    getModels (processId) {
       this.loading = true
-      apiActCategoryListAll().then(res => {
+      apiActProcessViewNode(processId).then(res => {
         this.loading = false
         if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
           // 仅展开指定级数 默认后台已展开所有
@@ -284,9 +346,17 @@ export default {
           })
           this.data = this.dataEdit = res.data.data
           this.dataEdit = JSON.parse(JSON.stringify(this.data))
-          this.dataEdit.unshift({ id: '0', title: '改为[一级部门]' })
+          this.dataEdit.unshift({ id: '0', title: '改为[一级节点]' })
         } else {
           this.$Message.error(res.data.message)
+        }
+      })
+    },
+    getRoleList () {
+      let that = this
+      apiRoleListAll().then(res => {
+        if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
+          that.roleList = res.data.data
         }
       })
     },
@@ -304,7 +374,7 @@ export default {
             ids += e.id + ','
           })
           ids = ids.substring(0, ids.length - 1)
-          apiActCategoryDelete(ids).then(res => {
+          apiActNodeDelete(ids).then(res => {
             if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
               this.$Message.success('删除成功')
               // 标记重新获取数据
@@ -325,7 +395,7 @@ export default {
       if (this.searchKey) {
         this.loading = true
         let keyword = this.searchKey
-        apiActCategorySearch(keyword).then(res => {
+        apiActNodeSearch(keyword).then(res => {
           this.loading = false
           if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
             this.data = res.data.data.content
@@ -339,7 +409,7 @@ export default {
       this.$refs.modelFormAdd.validate(valid => {
         if (valid) {
           this.loadingSubmit = true
-          apiActCategoryCreate(this.modelFormAdd).then(res => {
+          apiActNodeCreate(this.modelFormAdd).then(res => {
             this.loadingSubmit = false
             if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
               this.$Message.success(res.data.message)
@@ -359,17 +429,34 @@ export default {
       this.$refs.modelForm.validate(valid => {
         if (valid) {
           if (!this.modelForm.id) {
-            this.$Message.warning('请先点击选择要修改的部门节点')
+            this.$Message.warning('请先点击选择要修改的节点')
             return
           }
+          this.modelForm.nodeId = this.modelForm.id
+          let ids = []
+          this.selectUsers.forEach(e => {
+            ids += e.id + ','
+          })
+          if (ids.length > 0) {
+            ids = ids.substring(0, ids.length - 1)
+          }
+
+          if (!this.chooseRole) {
+            this.modelForm.roleIds = []
+          }
+          if (this.chooseUser) {
+            this.modelForm.userIds = ids
+          } else {
+            this.modelForm.userIds = []
+          }
+          if (!this.chooseDepartment) {
+            this.modelForm.departmentIds = []
+          }
           this.loadingSubmit = true
-          apiActCategoryUpdate(this.modelForm).then(res => {
+          apiActProcessUpdateNode(this.modelForm).then(res => {
             this.loadingSubmit = false
             if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
-              this.$Message.success('编辑成功')
-              // 标记重新获取数据
-              // this.$store.commit('setAdded', false)
-              // util.initRouter(this)
+              this.$Message.success(res.data.message)
               this.init()
               this.modelModalVisible = false
             } else {
@@ -383,6 +470,20 @@ export default {
 
     /* **** 页面内按钮交互代码(和后台有交互) begin **** */
     renderContent (h, { root, node, data }) {
+      let color = ''
+      let word = ''
+      if (data.type === 1) {
+        color = '#47cb89'
+        word = '开'
+      } else if (data.type === 2) {
+        color = '#2db7f5'
+        word = '审'
+      } else if (data.type === 9) {
+        word = '结'
+      } else {
+        color = '#f90'
+        word = '其他'
+      }
       return h(
         'span',
         {
@@ -399,6 +500,19 @@ export default {
         [
           h('span', [
             h(
+              'Avatar',
+              {
+                props: {
+                  size: 'small'
+                },
+                style: {
+                  background: color,
+                  'margin-right': '5px'
+                }
+              },
+              word
+            ),
+            h(
               'span',
               {
                 class: {
@@ -412,6 +526,21 @@ export default {
         ]
       )
     },
+    clickRole (v) {
+      this.chooseRole = v
+    },
+    clickUser (v) {
+      this.chooseUser = v
+    },
+    clickDepartment (v) {
+      this.chooseDepartment = v
+    },
+    handleSelectDepTree (v) {
+      this.modelForm.departmentIds = v
+    },
+    handleSelectUser (v) {
+      this.selectUsers = v
+    },
     changeSelectParent (v) {
       if (v.length > 0) {
         // 转换null为''
@@ -422,8 +551,8 @@ export default {
         }
         let str = JSON.stringify(v[0])
         let data = JSON.parse(str)
-        // 加载部门用户数据
-        if (data.title === '改为[一级部门]') {
+        // 加载节点用户数据
+        if (data.title === '改为[一级节点]') {
           this.modelForm.parentId = data.id
         } else {
           this.modelForm.parentId = data.id
@@ -433,7 +562,7 @@ export default {
     },
     addModal () {
       if (this.modelForm.id === '' || this.modelForm.id == null) {
-        this.$Message.warning('请先点击选择一个部门节点')
+        this.$Message.warning('请先点击选择一个节点')
         return
       }
       this.parentTitle = this.modelForm.title
@@ -449,7 +578,7 @@ export default {
       this.modelModalVisible = true
     },
     addModalRoot () {
-      this.modalTitle = '添加一级部门'
+      this.modalTitle = '添加一级节点'
       this.showParent = false
       this.modelFormAdd = {
         parentId: '0',
@@ -492,6 +621,46 @@ export default {
         let item = JSON.parse(str)
         this.modelForm = item
         this.selectTitle = item.title
+        
+        if (item.users && item.users.length > 0) {
+          this.chooseUser = true
+          this.$refs.user.setData(item.users)
+        } else {
+          this.chooseUser = false
+          this.$refs.user.setData([])
+        }
+
+        if (item.departments && item.departments.length > 0) {
+          this.chooseDepartment = true
+          let departmentIds = []
+          let titles = ''
+          item.departments.forEach(e => {
+            departmentIds.push(e.id)
+            if (titles === '') {
+              titles = e.name
+            } else {
+              titles = titles + '、' + e.name
+            }
+          })
+          this.$refs.depTree.setData(departmentIds, titles)
+          item.departmentIds = departmentIds
+        } else {
+          this.chooseDepartment = false;
+          this.$refs.depTree.setData([], "");
+        }
+
+        // 角色
+        if (item.roles && item.roles.length > 0) {
+          this.chooseRole = true
+          let roleIds = []
+          item.roles.forEach (e => {
+            roleIds.push(e.id)
+          })
+          item.roleIds = roleIds
+        } else {
+          this.chooseRole = false
+          item.roleIds = []
+        }
       }
     },
     changeCheck (v) {

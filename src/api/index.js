@@ -397,6 +397,10 @@ export const apiActCategoryDelete = (ids, params) => {
   return axios.deleteRequest('/act-category/delete/' + ids, params)
 }
 
+export const apiActCategorySearch = (keyword, params) => {
+  return axios.getRequest('/act-category/search/' + keyword, params)
+}
+
 export const apiActCategoryImportData = (params) => {
   return axios.importRequest('/act-category/import-data', params)
 }
@@ -500,4 +504,170 @@ export const apiActProcessEnable = (id, params) => {
 
 export const apiActProcessDisable = (id, params) => {
   return axios.postRequest('/act-process/disable/' + id, params)
+}
+
+export const apiActProcessDeployFile = '/bootan/act-process/deploy-file'
+
+export const apiActProcessConvertModel = (id, params) => {
+  return axios.postRequest('/act-process/convert-model/' + id, params)
+}
+
+export const apiActProcessViewNode = (id, params) => {
+  return axios.getRequest('/act-process/view-node/' + id, params)
+}
+
+export const apiActProcessUpdateNode = (params) => {
+  return axios.postRequest('/act-process/update-node', params)
+}
+
+export const apiActProcessViewFirstNode = (id, params) => {
+  return axios.getRequest('/act-process/view-first-node/' + id, params)
+}
+
+export const apiActNodeListIndex = (params) => {
+  return axios.getRequest('/act-node/list-index', params)
+}
+
+export const apiActNodeListAll = (params) => {
+  return axios.getRequest('/act-node/list-all', params)
+}
+
+export const apiActNodeView = (id, params) => {
+  return axios.getRequest('/act-node/view/' + id, params)
+}
+
+export const apiActNodeSearch = (keyword, params) => {
+  return axios.getRequest('/act-node/search/' + keyword, params)
+}
+
+export const apiActNodeSave = (params) => {
+  return axios.postRequest('/act-node/save', params)
+}
+
+export const apiActNodeCreate = (params) => {
+  return axios.postRequest('/act-node/create', params)
+}
+
+export const apiActNodeUpdate = (params) => {
+  return axios.postRequest('/act-node/update', params)
+}
+
+export const apiActNodeDelete = (ids, params) => {
+  return axios.deleteRequest('/act-node/delete/' + ids, params)
+}
+
+export const apiActNodeImportData = (params) => {
+  return axios.importRequest('/act-node/import-data', params)
+}
+
+export const apiActNodeExportData = (params) => {
+  return axios.getRequest('/act-node/export-data', params)
+}
+
+export const apiActNodeEnable = (id, params) => {
+  return axios.postRequest('/act-node/enable/' + id, params)
+}
+
+export const apiActNodeDisable = (id, params) => {
+  return axios.postRequest('/act-node/disable/' + id, params)
+}
+
+export const apiActBusinessListIndex = (params) => {
+  return axios.getRequest('/act-business/list-index', params)
+}
+
+export const apiActBusinessListAll = (params) => {
+  return axios.getRequest('/act-business/list-all', params)
+}
+
+export const apiActBusinessView = (id, params) => {
+  return axios.getRequest('/act-business/view/' + id, params)
+}
+
+export const apiActBusinessSearch = (keyword, params) => {
+  return axios.getRequest('/act-business/search/' + keyword, params)
+}
+
+export const apiActBusinessSave = (params) => {
+  return axios.postRequest('/act-business/save', params)
+}
+
+export const apiActBusinessCreate = (params) => {
+  return axios.postRequest('/act-business/create', params)
+}
+
+export const apiActBusinessApply = (params) => {
+  return axios.postRequest('/act-business/apply', params)
+}
+
+export const apiActBusinessUpdate = (params) => {
+  return axios.postRequest('/act-business/update', params)
+}
+
+export const apiActBusinessDelete = (ids, params) => {
+  return axios.deleteRequest('/act-business/delete/' + ids, params)
+}
+
+export const apiActBusinessImportData = (params) => {
+  return axios.importRequest('/act-business/import-data', params)
+}
+
+export const apiActBusinessExportData = (params) => {
+  return axios.getRequest('/act-business/export-data', params)
+}
+
+export const apiActBusinessEnable = (id, params) => {
+  return axios.postRequest('/act-business/enable/' + id, params)
+}
+
+export const apiActBusinessDisable = (id, params) => {
+  return axios.postRequest('/act-business/disable/' + id, params)
+}
+
+export const apiActLeaveListIndex = (params) => {
+  return axios.getRequest('/act-leave/list-index', params)
+}
+
+export const apiActLeaveListAll = (params) => {
+  return axios.getRequest('/act-leave/list-all', params)
+}
+
+export const apiActLeaveView = (id, params) => {
+  return axios.getRequest('/act-leave/view/' + id, params)
+}
+
+export const apiActLeaveSearch = (keyword, params) => {
+  return axios.getRequest('/act-leave/search/' + keyword, params)
+}
+
+export const apiActLeaveSave = (params) => {
+  return axios.postRequest('/act-leave/save', params)
+}
+
+export const apiActLeaveCreate = (params) => {
+  return axios.postRequest('/act-leave/create', params)
+}
+
+export const apiActLeaveUpdate = (params) => {
+  return axios.postRequest('/act-leave/update', params)
+}
+
+export const apiActLeaveDelete = (ids, params) => {
+  return axios.deleteRequest('/act-leave/delete/' + ids, params)
+}
+
+export const apiActLeaveImportData = (params) => {
+  return axios.importRequest('/act-leave/import-data', params)
+}
+
+export const apiActLeaveExportData = (params) => {
+  return axios.getRequest('/act-leave/export-data', params)
+}
+
+export const apiActLeaveEnable = (id, params) => {
+  return axios.postRequest('/act-leave/enable/' + id, params)
+}
+
+export const apiActLeaveDisable = (id, params) => {
+  return axios.postRequest('/act-leave/disable/' + id, params)
 }

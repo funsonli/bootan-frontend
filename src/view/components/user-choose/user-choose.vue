@@ -268,7 +268,7 @@ export default {
       let flag = true
       this.selectUsers.forEach(e => {
         if (v.id === e.id) {
-          that.$Message.warning('已经添加过啦，请勿重复选择')
+          that.$Message.warning('已经添加过了，请勿重复选择')
           flag = false
         }
       })
