@@ -60,14 +60,12 @@ import {
   // apiActLeaveSearch,
   apiActLeaveImportData,
   apiActLeaveExportData,
-  apiActLeaveDeployFile,
-  apiActLeaveConvertModel,
   apiActLeaveEnable,
   apiActLeaveDisable
 } from '@/api/index'
 import excel from '@/libs/excel'
 import { getToken } from '@/libs/util'
-import printJS from "print-js"
+import printJS from 'print-js'
 import { importDataColumns, importData } from './import-excel.js'
 
 export default {
@@ -80,48 +78,48 @@ export default {
       options: {
         shortcuts: [
           {
-            text: "1 天",
-            value() {
-              const end = new Date();
-              const start = new Date();
-              end.setTime(start.getTime());
-              return [start, end];
+            text: '1 天',
+            value () {
+              const end = new Date()
+              const start = new Date()
+              end.setTime(start.getTime())
+              return [start, end]
             }
           },
           {
-            text: "2 天",
-            value() {
-              const end = new Date();
-              const start = new Date();
-              end.setTime(start.getTime() + 3600 * 1000 * 24 * 1);
-              return [start, end];
+            text: '2 天',
+            value () {
+              const end = new Date()
+              const start = new Date()
+              end.setTime(start.getTime() + 3600 * 1000 * 24 * 1)
+              return [start, end]
             }
           },
           {
-            text: "3 天",
-            value() {
-              const end = new Date();
-              const start = new Date();
-              end.setTime(start.getTime() + 3600 * 1000 * 24 * 2);
-              return [start, end];
+            text: '3 天',
+            value () {
+              const end = new Date()
+              const start = new Date()
+              end.setTime(start.getTime() + 3600 * 1000 * 24 * 2)
+              return [start, end]
             }
           },
           {
-            text: "1 周",
-            value() {
-              const end = new Date();
-              const start = new Date();
-              end.setTime(start.getTime() + 3600 * 1000 * 24 * 6);
-              return [start, end];
+            text: '1 周',
+            value () {
+              const end = new Date()
+              const start = new Date()
+              end.setTime(start.getTime() + 3600 * 1000 * 24 * 6)
+              return [start, end]
             }
           },
           {
-            text: "1 个月",
-            value() {
-              const end = new Date();
-              const start = new Date();
-              end.setTime(start.getTime() + 3600 * 1000 * 24 * 29);
-              return [start, end];
+            text: '1 个月',
+            value () {
+              const end = new Date()
+              const start = new Date()
+              end.setTime(start.getTime() + 3600 * 1000 * 24 * 29)
+              return [start, end]
             }
           }
         ]
@@ -397,14 +395,14 @@ export default {
       this.category = this.$route.query.category
       this.backRoute = this.$route.query.backRoute
       this.modelForm.processDefinitionId = this.$route.query.processDefinitionId
-      if (this.category != 1) {
+      if (this.category !== 1) {
         this.modelForm.id = this.$route.query.id
         this.getModel()
       } else {
         this.$refs.modelForm.resetFields()
         this.selectDate = []
       }
-      //this.getModels()
+      // this.getModels()
     },
 
     /* **** 和后台交互代码区块 begin **** */
@@ -433,9 +431,9 @@ export default {
         this.loading = false
         if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
           this.modelForm = res.data.data
-          this.selectDate = [];
-          this.selectDate[0] = this.modelForm.startedAt;
-          this.selectDate[1] = this.modelForm.endedAt;
+          this.selectDate = []
+          this.selectDate[0] = this.modelForm.startedAt
+          this.selectDate[1] = this.modelForm.endedAt
         } else {
           this.$Message.error(res.data.message)
         }
@@ -630,8 +628,8 @@ export default {
     convertModel (v) {
       let that = this
       this.$Modal.confirm({
-        title: "确认转化",
-        content: "您确认要转化流程 " + v.name + " 为模型?",
+        title: '确认转化',
+        content: '您确认要转化流程 ' + v.name + ' 为模型?',
         loading: true,
         onOk: () => {
           apiActLeaveConvertModel(v.id).then(res => {
@@ -645,22 +643,22 @@ export default {
         }
       })
     },
-    handleFormatError(file) {
+    handleFormatError (file) {
       this.$Notice.warning({
-        title: "不支持的文件格式",
+        title: '不支持的文件格式',
         desc:
-          "所选文件‘ " +
+          '所选文件‘ ' +
           file.name +
-          " ’格式不正确, 请选择 .zip .bar .bpmn .bpmn20.xml格式文件"
+          ' ’格式不正确, 请选择 .zip .bar .bpmn .bpmn20.xml格式文件'
       })
     },
-    handleMaxSize(file) {
+    handleMaxSize (file) {
       this.$Notice.warning({
-        title: "文件大小过大",
-        desc: "所选文件‘ " + file.name + " ’大小过大, 不得超过 5M."
+        title: '文件大小过大',
+        desc: '所选文件‘ ' + file.name + ' ’大小过大, 不得超过 5M.'
       })
     },
-    handleSuccess(res, file) {
+    handleSuccess (res, file) {
       if (parseInt(res.status) === 200 && parseInt(res.data.code) === 200) {
         this.$Message.success('部署成功，请继续编辑完善流程信息')
         this.modalVisible = false
@@ -669,10 +667,10 @@ export default {
         this.$Message.error(res.message)
       }
     },
-    handleError(error, file, fileList) {
+    handleError (error, file, fileList) {
       this.$Message.error(error.toString())
     },
-    selectDateRange(v) {
+    selectDateRange (v) {
       if (v[0]) {
         this.modelForm.startedAt = v[0]
         this.modelForm.endedAt = v[1]
@@ -682,25 +680,25 @@ export default {
         let hours = Math.round(date / (60 * 60 * 1000))
         this.modelForm.duration = hours
       } else {
-        this.modelForm.startedAt = ""
-        this.modelForm.endedAt = ""
+        this.modelForm.startedAt = ''
+        this.modelForm.endedAt = ''
         this.modelForm.duration = 0
       }
     },
-    stringToDate(str) {
-      let tempStrs = str.split(" ");
-      let dateStrs = tempStrs[0].split("-");
-      let year = parseInt(dateStrs[0], 10);
-      let month = parseInt(dateStrs[1], 10) - 1;
-      let day = parseInt(dateStrs[2], 10);
-      let timeStrs = tempStrs[1].split(":");
-      let hour = parseInt(timeStrs[0], 10);
-      let minute = parseInt(timeStrs[1], 10);
-      let date = new Date(year, month, day, hour, minute, 0);
-      return date;
+    stringToDate (str) {
+      let tempStrs = str.split(' ')
+      let dateStrs = tempStrs[0].split('-')
+      let year = parseInt(dateStrs[0], 10)
+      let month = parseInt(dateStrs[1], 10) - 1
+      let day = parseInt(dateStrs[2], 10)
+      let timeStrs = tempStrs[1].split(':')
+      let hour = parseInt(timeStrs[0], 10)
+      let minute = parseInt(timeStrs[1], 10)
+      let date = new Date(year, month, day, hour, minute, 0)
+      return date
     },
     printModel () {
-      let data = [];
+      let data = []
       let leave = {
         申请人: this.modelForm.createBy,
         请假类型: this.modelForm.type,
@@ -708,37 +706,37 @@ export default {
         原因: this.modelForm.description,
         请假开始时间: this.modelForm.startedAt,
         请假结束时间: this.modelForm.endedAt,
-        持续时长: this.modelForm.duration + " 小时"
-      };
-      data.push(leave);
+        持续时长: this.modelForm.duration + ' 小时'
+      }
+      data.push(leave)
       printJS({
         printable: data,
-        type: "json",
-        header: "请假申请表",
-        gridStyle: "border: 1px solid lightgray;text-align:center",
+        type: 'json',
+        header: '请假申请表',
+        gridStyle: 'border: 1px solid lightgray;text-align:center',
         properties: [
-          "申请人",
-          "请假类型",
-          "标题",
-          "原因",
-          "请假开始时间",
-          "请假结束时间",
-          "持续时长"
+          '申请人',
+          '请假类型',
+          '标题',
+          '原因',
+          '请假开始时间',
+          '请假结束时间',
+          '持续时长'
         ]
-      });
+      })
     },
-    handelCancel() {
-      this.closeCurrentPage();
+    handelCancel () {
+      this.closeCurrentPage()
     },
     // 关闭当前页面
-    closeCurrentPage() {
-      this.$store.commit("removeTag", "leave");
+    closeCurrentPage () {
+      this.$store.commit('removeTag', 'leave')
       localStorage.pageOpenedList = JSON.stringify(
         this.$store.state.app.pageOpenedList
-      );
+      )
       this.$router.push({
         name: this.backRoute
-      });
+      })
     },
     /* **** 页面内按钮交互代码 end **** */
 

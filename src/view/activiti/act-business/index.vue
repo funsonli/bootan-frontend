@@ -1,5 +1,5 @@
 <!--<style lang="less">
-@import "./index.less";
+@import "./index.less"
 </style>-->
 <template>
   <div>
@@ -278,9 +278,9 @@ import {
   apiActBusinessListIndex,
   // apiActBusinessListAll,
   // apiActBusinessView,
-  apiActBusinessCreate,
+  // apiActBusinessCreate,
   apiActBusinessApply,
-  apiActBusinessUpdate,
+  // apiActBusinessUpdate,
   apiActBusinessDelete,
   // apiActBusinessSearch,
   apiActBusinessImportData,
@@ -304,9 +304,9 @@ export default {
       categories: [
       ],
       treeMap: {
-          value: 'id',
-          label: 'name',
-          children: 'children'
+        value: 'id',
+        label: 'name',
+        children: 'children'
       },
       selectCount: 0,
       loading: true,
@@ -342,7 +342,7 @@ export default {
       searchFormDrawer: {
         name: '',
         actCategoryId: '',
-        showLatest: 0,
+        showLatest: 0
       },
       columns: [
         { type: 'selection', width: 60, align: 'center', fixed: 'left' },
@@ -485,65 +485,65 @@ export default {
       ],
       processColumns: [
         {
-          type: "index",
+          type: 'index',
           width: 60,
-          align: "center"
+          align: 'center'
         },
         {
-          title: "名称",
-          key: "name",
+          title: '名称',
+          key: 'name',
           width: 150,
           sortable: true
         },
         {
-          title: "备注描述",
-          key: "description",
+          title: '备注描述',
+          key: 'description',
           width: 150,
           sortable: true
         },
         {
-          title: "所属分类",
-          key: "categoryTitle",
+          title: '所属分类',
+          key: 'categoryTitle',
           width: 150,
           sortable: true
         },
         {
-          title: "版本",
-          key: "version",
-          align: "center",
+          title: '版本',
+          key: 'version',
+          align: 'center',
           sortable: true,
           render: (h, params) => {
-            let re = "";
+            let re = ''
             if (params.row.version) {
-              re = "v." + params.row.version;
+              re = 'v.' + params.row.version
             }
-            return h("div", re);
+            return h('div', re)
           }
         },
         {
-          title: "操作",
-          key: "action",
+          title: '操作',
+          key: 'action',
           width: 135,
-          align: "center",
-          fixed: "right",
+          align: 'center',
+          fixed: 'right',
           render: (h, params) => {
-            return h("div", [
+            return h('div', [
               h(
-                "Button",
+                'Button',
                 {
                   props: {
-                    type: "info",
-                    size: "small"
+                    type: 'info',
+                    size: 'small'
                   },
                   on: {
                     click: () => {
-                      this.chooseProcess(params.row);
+                      this.chooseProcess(params.row)
                     }
                   }
                 },
-                "选择该流程"
+                '选择该流程'
               )
-            ]);
+            ])
           }
         }
       ],
@@ -760,9 +760,9 @@ export default {
       })
     },
     resetProcess () {
-      this.$refs.searchFormDrawer.resetFields();
+      this.$refs.searchFormDrawer.resetFields()
       // 重新加载数据
-      this.getProcessList();
+      this.getProcessList()
     },
     getActPriorityType () {
       apiDictDataViewName('act_priority_type').then(res => {
@@ -899,6 +899,7 @@ export default {
             ids.push(e.id)
           })
           this.modelForm.assignees = ids
+          this.getModels()
         } else {
           this.$Message.error(res.data.message)
         }
@@ -909,13 +910,13 @@ export default {
     /* **** 页面内按钮交互代码 end **** */
 
     /* **** 页面内控件标准代码（一般无须修改） begin **** */
-    handleChangeCategory(value, selectedData) {
+    handleChangeCategory (value, selectedData) {
       let actCategoryId = ''
       // 获取最后一个值
       if (value && value.length > 0) {
         actCategoryId = value[value.length - 1]
       }
-      this.searchFormDrawer.actCategoryId = actCategoryId;
+      this.searchFormDrawer.actCategoryId = actCategoryId
     },
     changeSearchDropDown () {
       if (this.searchDropDown) {
@@ -1092,21 +1093,21 @@ export default {
 
       // 遍历 tree
       tree.forEach((item) => {
-          // 读取 map 的键值映射
-          const value = item[ map.value ]
-          const label = item[ map.label ]
-          let children = item[ map.children ]
+        // 读取 map 的键值映射
+        const value = item[ map.value ]
+        const label = item[ map.label ]
+        let children = item[ map.children ]
 
-          // 如果有子节点，递归
-          if (children) {
-              children = this.convertTree(children, map)
-          }
+        // 如果有子节点，递归
+        if (children) {
+          children = this.convertTree(children, map)
+        }
 
-          result.push({
-              value,
-              label,
-              children
-          })
+        result.push({
+          value,
+          label,
+          children
+        })
       })
 
       return result
