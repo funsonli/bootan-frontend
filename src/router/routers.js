@@ -39,6 +39,8 @@ export const otherRouter = {
     { path: 'act_leave', title: '请假申请', name: 'act_leave', component: () => import('@/view/activiti/business/act_leave.vue') },
     { path: 'add-edit-message', title: '消息详情', name: 'add-edit-message_page', component: () => import('@/view/sys/message/add-edit.vue') },
     { path: 'send-detail-message', title: '消息发送详情', name: 'message-send-detail_page', component: () => import('@/view/sys/message/send-detail.vue') },
+    // { path: 'user-center', title: '个人中心', name: 'user_center_page', component: () => import('@/view/single-page/user/index.vue') },
+    { path: 'change-password', title: '修改密码', name: 'change_password_page', component: () => import('@/view/single-page/user/change-password.vue') },
     { path: 'message', title: '消息中心', name: 'message_page', component: () => import('@/view/single-page/message/index.vue') }
   ]
 }

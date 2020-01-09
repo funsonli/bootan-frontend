@@ -73,6 +73,10 @@ export const apiUserEnable = (id, params) => {
   return axios.postRequest('/user/enable/' + id, params)
 }
 
+export const apiUserChangePassword = (params) => {
+  return axios.postRequest('/user/change-password', params)
+}
+
 export const apiRoleListAll = (params) => {
   return axios.getRequest('/role/list-all', params)
 }
@@ -670,4 +674,8 @@ export const apiActLeaveEnable = (id, params) => {
 
 export const apiActLeaveDisable = (id, params) => {
   return axios.postRequest('/act-leave/disable/' + id, params)
+}
+
+export const apiActTaskListTodo = (params) => {
+  return axios.getRequest('/act-task/list-todo', params)
 }
